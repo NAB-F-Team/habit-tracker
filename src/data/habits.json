@@ -1,0 +1,20 @@
+[
+  {
+    "id": "h1",
+    "title": "Drink Water",
+    "category": "Health",
+    "frequency": "daily",
+    "target": 8,
+    "priority": "High",
+    "status": "Active"
+  },
+  {
+    "id": "h2",
+    "title": "Read Book",
+    "category": "Study",
+    "frequency": "daily",
+    "target": 30,
+    "priority": "Medium",
+    "status": "Active"
+  }
+]
