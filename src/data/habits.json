@@ -1,20 +1,124 @@
 [
   {
-    "id": "h1",
-    "title": "Drink Water",
+    "id": "hb1",
+    "title": "Drink water",
     "category": "Health",
-    "frequency": "daily",
+    "frequency": "Daily",
     "target": 8,
+    "targetPerDay": 8,
+    "targetUnit": "cups",
     "priority": "High",
-    "status": "Active"
+    "status": "Active",
+    "createdAt": "2026-05-01T00:00:00Z"
   },
   {
-    "id": "h2",
-    "title": "Read Book",
+    "id": "hb2",
+    "title": "Study React",
     "category": "Study",
-    "frequency": "daily",
-    "target": 30,
+    "frequency": "Daily",
+    "target": 60,
+    "targetPerDay": 60,
+    "targetUnit": "minutes",
+    "priority": "High",
+    "status": "Active",
+    "createdAt": "2026-04-15T00:00:00Z"
+  },
+  {
+    "id": "hb3",
+    "title": "Workout",
+    "category": "Fitness",
+    "frequency": "Specific days",
+    "target": 1,
+    "targetPerDay": 1,
+    "targetUnit": "times",
     "priority": "Medium",
-    "status": "Active"
+    "status": "Paused",
+    "daysOfWeek": [1, 3, 5],
+    "createdAt": "2026-04-01T00:00:00Z"
+  },
+  {
+    "id": "hb4",
+    "title": "Meditate",
+    "category": "Mindfulness",
+    "frequency": "Daily",
+    "target": 15,
+    "targetPerDay": 15,
+    "targetUnit": "minutes",
+    "priority": "Medium",
+    "status": "Active",
+    "createdAt": "2026-05-10T00:00:00Z"
+  },
+  {
+    "id": "hb5",
+    "title": "Read books",
+    "category": "Study",
+    "frequency": "Daily",
+    "target": 30,
+    "targetPerDay": 30,
+    "targetUnit": "pages",
+    "priority": "Low",
+    "status": "Active",
+    "createdAt": "2026-04-20T00:00:00Z"
+  },
+  {
+    "id": "hb6",
+    "title": "Code review",
+    "category": "Work",
+    "frequency": "Daily",
+    "target": 2,
+    "targetPerDay": 2,
+    "targetUnit": "times",
+    "priority": "High",
+    "status": "Active",
+    "createdAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "hb7",
+    "title": "Walk 10K steps",
+    "category": "Health",
+    "frequency": "Daily",
+    "target": 10000,
+    "targetPerDay": 10000,
+    "targetUnit": "steps",
+    "priority": "Medium",
+    "status": "Archived",
+    "createdAt": "2026-03-15T00:00:00Z"
+  },
+  {
+    "id": "hb8",
+    "title": "Protein intake",
+    "category": "Health",
+    "frequency": "Daily",
+    "target": 150,
+    "targetPerDay": 150,
+    "targetUnit": "grams",
+    "priority": "High",
+    "status": "Active",
+    "createdAt": "2026-04-10T00:00:00Z"
+  },
+  {
+    "id": "hb9",
+    "title": "Morning run",
+    "category": "Fitness",
+    "frequency": "Specific days",
+    "target": 5,
+    "targetPerDay": 5,
+    "targetUnit": "meters",
+    "priority": "Medium",
+    "status": "Active",
+    "daysOfWeek": [0, 2, 4, 6],
+    "createdAt": "2026-03-20T00:00:00Z"
+  },
+  {
+    "id": "hb10",
+    "title": "Focus work sessions",
+    "category": "Work",
+    "frequency": "Daily",
+    "target": 4,
+    "targetPerDay": 4,
+    "targetUnit": "reps",
+    "priority": "High",
+    "status": "Active",
+    "createdAt": "2026-04-05T00:00:00Z"
   }
 ]

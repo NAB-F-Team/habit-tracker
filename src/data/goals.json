@@ -1,0 +1,72 @@
+[
+  {
+    "id": "gl1",
+    "habitId": "hb1",
+    "type": "Streak",
+    "target": 30,
+    "createdAt": "2026-05-01T00:00:00Z"
+  },
+  {
+    "id": "gl2",
+    "habitId": "hb2",
+    "type": "Streak",
+    "target": 10,
+    "createdAt": "2026-04-15T00:00:00Z"
+  },
+  {
+    "id": "gl3",
+    "habitId": "hb3",
+    "type": "Total Completions",
+    "target": 50,
+    "createdAt": "2026-04-01T00:00:00Z"
+  },
+  {
+    "id": "gl4",
+    "habitId": "hb4",
+    "type": "Streak",
+    "target": 7,
+    "createdAt": "2026-05-10T00:00:00Z"
+  },
+  {
+    "id": "gl5",
+    "habitId": "hb5",
+    "type": "Total Completions",
+    "target": 50,
+    "createdAt": "2026-04-20T00:00:00Z"
+  },
+  {
+    "id": "gl6",
+    "habitId": "hb8",
+    "type": "Streak",
+    "target": 20,
+    "createdAt": "2026-04-10T00:00:00Z"
+  },
+  {
+    "id": "gl7",
+    "habitId": "hb10",
+    "type": "Total Completions",
+    "target": 100,
+    "createdAt": "2026-04-05T00:00:00Z"
+  },
+  {
+    "id": "gl8",
+    "habitId": "hb9",
+    "type": "Weekly Target",
+    "target": 3,
+    "createdAt": "2026-04-25T00:00:00Z"
+  },
+  {
+    "id": "gl9",
+    "habitId": "hb6",
+    "type": "Monthly Target",
+    "target": 60,
+    "createdAt": "2026-05-05T00:00:00Z"
+  },
+  {
+    "id": "gl10",
+    "habitId": "hb1",
+    "type": "Total Completions",
+    "target": 240,
+    "createdAt": "2026-05-01T00:00:00Z"
+  }
+]
