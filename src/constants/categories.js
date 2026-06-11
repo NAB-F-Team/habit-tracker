@@ -6,3 +6,7 @@ export const HABIT_CATEGORIES = [
   "Fitness",
   "Other"
 ];
+export const GOAL_TYPES = [
+  "Streak",
+  "Total Completions"
+];

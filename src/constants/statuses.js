@@ -9,10 +9,3 @@ export const CHECKIN_STATUSES = [
   "In Progress",
   "Completed"
 ];
-
-export const GOAL_TYPES = [
-  "Streak",
-  "Total Completions",
-  "Weekly Target",
-  "Monthly Target"
-];
