@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addHabit, updateHabit } from "../../store/habitsSlice";
 import { addGoal } from "../../store/goalsSlice";
+import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
+import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
+import { HABIT_PRIORITIES } from "../../constants/priorities";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -9,44 +12,6 @@ import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Switch } from "../ui/switch";
-
-const TARGET_UNITS = [
-  "times",
-  "cups",
-  "kilometers",
-  "pages",
-  "minutes",
-  "steps",
-  "kilograms",
-  "grams",
-  "milligrams",
-  "micrograms",
-  "ounces",
-  "pounds",
-  "liters",
-  "milliliters",
-  "fluid ounces",
-  "hours",
-  "joules",
-  "kilojoules",
-  "kilocalories",
-  "calories",
-  "meters",
-  "feet",
-  "yards",
-  "miles",
-  "seconds"
-];
-
-const DAYS_OF_WEEK = [
-  { value: 0, label: "Sun" },
-  { value: 1, label: "Mon" },
-  { value: 2, label: "Tue" },
-  { value: 3, label: "Wed" },
-  { value: 4, label: "Thu" },
-  { value: 5, label: "Fri" },
-  { value: 6, label: "Sat" }
-];
 
 function HabitForm({ isOpen, onClose, editingHabit }) {
   const dispatch = useDispatch();
@@ -191,7 +156,7 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Health", "Study", "Work", "Mindfulness", "Other"].map((cat) => (
+                  {HABIT_CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
@@ -207,7 +172,7 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Low", "Medium", "High"].map((pri) => (
+                  {HABIT_PRIORITIES.map((pri) => (
                     <SelectItem key={pri} value={pri}>
                       {pri}
                     </SelectItem>
@@ -308,8 +273,11 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Streak">Streak Target (consecutive days)</SelectItem>
-                    <SelectItem value="Total Completions">Total Completions Target</SelectItem>
+                    {GOAL_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type === "Streak" ? "Streak Target (consecutive days)" : "Total Completions Target"}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
