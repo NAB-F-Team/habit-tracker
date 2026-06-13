@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import { Home, ListChecks, Target, BarChart3, Settings, Plus, Menu } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowAddHabitModal } from "../../features/ui/uiSlice";
 import HabitForm from "../domain/HabitForm";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "../ui/sheet";
