@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addHabit, updateHabit } from "../../store/habitsSlice";
-import { addGoal } from "../../store/goalsSlice";
+import { addHabit, updateHabit } from "../../features/habits/habitSlice";
+import { addGoal } from "../../features/goals/goalSlice";
 import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
 import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
 import { HABIT_PRIORITIES } from "../../constants/priorities";
@@ -13,9 +13,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Switch } from "../ui/switch";
 
-function HabitForm({ isOpen, onClose, editingHabit }) {
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
+const createInitialFormData = (editingHabit) => {
+  if (editingHabit) {
+    return {
+      name: editingHabit.name,
+      category: editingHabit.category,
+      frequency: editingHabit.frequency,
+      targetPerDay: editingHabit.targetPerDay,
+      targetUnit: editingHabit.targetUnit,
+      priority: editingHabit.priority,
+      daysOfWeek: editingHabit.daysOfWeek || [],
+      setGoal: false,
+      goalType: "Streak",
+      goalTarget: 30
+    };
+  }
+
+  return {
     name: "",
     category: "Health",
     frequency: "Daily",
@@ -26,39 +40,13 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     setGoal: false,
     goalType: "Streak",
     goalTarget: 30
-  });
-  const [errors, setErrors] = useState({});
+  };
+};
 
-  useEffect(() => {
-    if (editingHabit) {
-      setFormData({
-        name: editingHabit.name,
-        category: editingHabit.category,
-        frequency: editingHabit.frequency,
-        targetPerDay: editingHabit.targetPerDay,
-        targetUnit: editingHabit.targetUnit,
-        priority: editingHabit.priority,
-        daysOfWeek: editingHabit.daysOfWeek || [],
-        setGoal: false,
-        goalType: "Streak",
-        goalTarget: 30
-      });
-    } else {
-      setFormData({
-        name: "",
-        category: "Health",
-        frequency: "Daily",
-        targetPerDay: 1,
-        targetUnit: "times",
-        priority: "Medium",
-        daysOfWeek: [],
-        setGoal: false,
-        goalType: "Streak",
-        goalTarget: 30
-      });
-    }
-    setErrors({});
-  }, [editingHabit, isOpen]);
+function HabitForm({ isOpen, onClose, editingHabit }) {
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState(() => createInitialFormData(editingHabit));
+  const [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
@@ -106,6 +94,8 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
           habitId,
           type: formData.goalType,
           target: formData.goalTarget,
+          targetType: formData.goalType,
+          targetValue: formData.goalTarget,
           createdAt: new Date().toISOString()
         };
         dispatch(addGoal(goalData));

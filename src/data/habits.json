@@ -1,7 +1,7 @@
 [
   {
     "id": "hb1",
-    "title": "Drink water",
+    "name": "Drink water",
     "category": "Health",
     "frequency": "Daily",
     "target": 8,
@@ -13,7 +13,7 @@
   },
   {
     "id": "hb2",
-    "title": "Study React",
+    "name": "Study React",
     "category": "Study",
     "frequency": "Daily",
     "target": 60,
@@ -25,7 +25,7 @@
   },
   {
     "id": "hb3",
-    "title": "Workout",
+    "name": "Workout",
     "category": "Fitness",
     "frequency": "Specific days",
     "target": 1,
@@ -38,7 +38,7 @@
   },
   {
     "id": "hb4",
-    "title": "Meditate",
+    "name": "Meditate",
     "category": "Mindfulness",
     "frequency": "Daily",
     "target": 15,
@@ -50,7 +50,7 @@
   },
   {
     "id": "hb5",
-    "title": "Read books",
+    "name": "Read books",
     "category": "Study",
     "frequency": "Daily",
     "target": 30,
@@ -62,7 +62,7 @@
   },
   {
     "id": "hb6",
-    "title": "Code review",
+    "name": "Code review",
     "category": "Work",
     "frequency": "Daily",
     "target": 2,
@@ -74,7 +74,7 @@
   },
   {
     "id": "hb7",
-    "title": "Walk 10K steps",
+    "name": "Walk 10K steps",
     "category": "Health",
     "frequency": "Daily",
     "target": 10000,
@@ -86,7 +86,7 @@
   },
   {
     "id": "hb8",
-    "title": "Protein intake",
+    "name": "Protein intake",
     "category": "Health",
     "frequency": "Daily",
     "target": 150,
@@ -98,7 +98,7 @@
   },
   {
     "id": "hb9",
-    "title": "Morning run",
+    "name": "Morning run",
     "category": "Fitness",
     "frequency": "Specific days",
     "target": 5,
@@ -111,7 +111,7 @@
   },
   {
     "id": "hb10",
-    "title": "Focus work sessions",
+    "name": "Focus work sessions",
     "category": "Work",
     "frequency": "Daily",
     "target": 4,

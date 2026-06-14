@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import { Home, ListChecks, Target, BarChart3, Settings, Plus, Menu } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { setShowAddHabitModal } from "../../store/uiSlice";
 import HabitForm from "../domain/HabitForm";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "../ui/sheet";
@@ -17,9 +15,8 @@ const navigation = [
 
 function Sidebar() {
   const location = useLocation();
-  const dispatch = useDispatch();
-  const showAddHabitModal = useSelector((state) => state.ui.showAddHabitModal);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [showAddHabitModal, setShowAddHabitModal] = useState(false);
 
   const handleNavigate = () => {
     setMobileNavOpen(false);
@@ -60,7 +57,7 @@ function Sidebar() {
           <div className="flex h-full flex-col gap-4 p-4">
             <Button
               onClick={() => {
-                dispatch(setShowAddHabitModal(true));
+                setShowAddHabitModal(true);
                 setMobileNavOpen(false);
               }}
               className="w-full justify-center"
@@ -87,10 +84,6 @@ function Sidebar() {
               </ul>
             </nav>
 
-            <div className="rounded-lg border border-border bg-muted/50 p-3">
-              <p className="text-xs text-muted-foreground">Data auto-saves to</p>
-              <p className="text-sm font-medium text-foreground">Local Storage</p>
-            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -104,7 +97,7 @@ function Sidebar() {
             <span className="font-semibold text-foreground">Habit Tracker Pro</span>
           </div>
 
-          <Button onClick={() => dispatch(setShowAddHabitModal(true))} className="w-full justify-center">
+          <Button onClick={() => setShowAddHabitModal(true)} className="w-full justify-center">
             <Plus className="size-4" />
             Add Habit
           </Button>
@@ -128,15 +121,13 @@ function Sidebar() {
           </ul>
         </nav>
 
-        <div className="border-t border-border p-4">
-          <div className="rounded-lg bg-muted/50 px-3 py-2">
-            <p className="text-xs text-muted-foreground">Data auto-saves to</p>
-            <p className="text-sm font-medium text-foreground">Local Storage</p>
-          </div>
-        </div>
       </aside>
 
-      <HabitForm isOpen={showAddHabitModal} onClose={() => dispatch(setShowAddHabitModal(false))} />
+      <HabitForm
+        key={showAddHabitModal ? "habit-form-open" : "habit-form-closed"}
+        isOpen={showAddHabitModal}
+        onClose={() => setShowAddHabitModal(false)}
+      />
     </>
   );
 }

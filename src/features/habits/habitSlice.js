@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import habits from "../../data/habits.json";
+import { seedData } from "../../data/seedData";
 
 const initialState={
-    list:habits,
+    list:seedData.habits,
     filters:{
         category:"",
         priority:"",
