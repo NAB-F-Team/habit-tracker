@@ -8,6 +8,7 @@ import ProgressBar from "../components/shared/ProgressBar";
 import ResponsiveHeader from "../components/shared/ResponsiveHeader";
 import ResponsivePageContainer from "../components/shared/ResponsivePageContainer";
 import SectionCard from "../components/shared/SectionCard";
+import { getStatisticsPageData, getStreakStats, getSevenDayCompletionRate, getDateKey } from "../utils/statisticsUtils";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -19,97 +20,6 @@ const CATEGORY_STYLES = {
   Fitness: { dot: "bg-secondary/70", label: "text-secondary-foreground" },
   Other: { dot: "bg-muted-foreground", label: "text-muted-foreground" }
 };
-
-const getHabitTarget = (habit) => Number(habit.targetPerDay || habit.target || 1);
-
-const getCheckinValue = (checkin) => Number(checkin.completedCount || checkin.completed || 0);
-
-const isCompleted = (habit, checkin) => getCheckinValue(checkin) >= getHabitTarget(habit);
-
-const getDateKey = (date) => format(date, "yyyy-MM-dd");
-
-function groupByHabit(checkins) {
-  return checkins.reduce((groups, checkin) => {
-    if (!groups[checkin.habitId]) {
-      groups[checkin.habitId] = [];
-    }
-
-    groups[checkin.habitId].push(checkin);
-    return groups;
-  }, {});
-}
-
-function getStreakStats(habit, checkins) {
-  const completedDates = [...new Set(checkins.filter((checkin) => isCompleted(habit, checkin)).map((checkin) => checkin.date))].sort();
-
-  if (completedDates.length === 0) {
-    return { currentStreak: 0, longestStreak: 0, totalCompletions: 0 };
-  }
-
-  let longestStreak = 1;
-  let currentRun = 1;
-
-  for (let index = 1; index < completedDates.length; index += 1) {
-    const previous = new Date(`${completedDates[index - 1]}T00:00:00`);
-    const current = new Date(`${completedDates[index]}T00:00:00`);
-    const dayDifference = Math.round((current - previous) / 86400000);
-
-    currentRun = dayDifference === 1 ? currentRun + 1 : 1;
-    longestStreak = Math.max(longestStreak, currentRun);
-  }
-
-  let currentStreak = 1;
-  for (let index = completedDates.length - 1; index > 0; index -= 1) {
-    const previous = new Date(`${completedDates[index - 1]}T00:00:00`);
-    const current = new Date(`${completedDates[index]}T00:00:00`);
-    const dayDifference = Math.round((current - previous) / 86400000);
-
-    if (dayDifference !== 1) {
-      break;
-    }
-
-    currentStreak += 1;
-  }
-
-  return {
-    currentStreak,
-    longestStreak,
-    totalCompletions: completedDates.length
-  };
-}
-
-function getSevenDayCompletionRate(habit, checkins) {
-  const sevenDayKeys = new Set(Array.from({ length: 7 }, (_, index) => getDateKey(subDays(new Date(), index))));
-  const recentCheckins = checkins.filter((checkin) => sevenDayKeys.has(checkin.date));
-
-  if (recentCheckins.length === 0) {
-    return 0;
-  }
-
-  const completedCount = recentCheckins.filter((checkin) => isCompleted(habit, checkin)).length;
-  return Math.round((completedCount / recentCheckins.length) * 100);
-}
-
-function getCategoryDistribution(habits) {
-  const counts = habits.reduce((result, habit) => {
-    const category = habit.category || "Other";
-    result[category] = (result[category] || 0) + 1;
-    return result;
-  }, {});
-
-  return Object.entries(counts)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-}
-
-function getActivityData(checkins) {
-  const countsByDate = checkins.reduce((counts, checkin) => {
-    counts[checkin.date] = (counts[checkin.date] || 0) + 1;
-    return counts;
-  }, {});
-
-  return Object.entries(countsByDate).map(([date, count]) => ({ date, count }));
-}
 
 function ActivityHeatmap({ data }) {
   const scrollRef = useRef(null);
@@ -282,30 +192,7 @@ export default function StatisticsPage() {
   const habits = useSelector((state) => state.habits.list);
   const checkins = useSelector((state) => state.checkins.list);
 
-  const stats = useMemo(() => {
-    const activeHabits = habits.filter((habit) => habit.status === "Active");
-    const activeHabitIds = new Set(activeHabits.map((habit) => habit.id));
-    const checkinsByHabit = groupByHabit(checkins);
-    const todayKey = getDateKey(new Date());
-    const todayCheckins = checkins.filter((checkin) => checkin.date === todayKey && activeHabitIds.has(checkin.habitId));
-    const todayCompleted = todayCheckins.filter((checkin) => {
-      const habit = habits.find((item) => item.id === checkin.habitId);
-      return habit && isCompleted(habit, checkin);
-    }).length;
-
-    const completedTodayPercent = activeHabits.length > 0 ? Math.round((todayCompleted / activeHabits.length) * 100) : 0;
-    const categories = getCategoryDistribution(activeHabits);
-    const atRiskCount = activeHabits.filter((habit) => getStreakStats(habit, checkinsByHabit[habit.id] || []).currentStreak < 3).length;
-
-    return {
-      activeHabits,
-      checkinsByHabit,
-      completedTodayPercent,
-      categories,
-      atRiskCount,
-      activityData: getActivityData(checkins)
-    };
-  }, [habits, checkins]);
+  const stats = useMemo(() => getStatisticsPageData(habits, checkins), [habits, checkins]);
 
   return (
     <ResponsivePageContainer>
