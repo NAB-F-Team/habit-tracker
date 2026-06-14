@@ -281,7 +281,7 @@ export default function StatisticsPage() {
                       return (
                         <tr key={habit.id}>
                           <td className="py-4">
-                            <span className="font-medium text-foreground">{habit.title}</span>
+                            <span className="font-medium text-foreground">{habit.name}</span>
                           </td>
                           <td className="py-4">
                             <span className="text-muted-foreground">{streak.currentStreak} days</span>
