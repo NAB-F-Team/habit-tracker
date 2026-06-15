@@ -1,7 +1,7 @@
 import { format, differenceInDays } from "date-fns";
 
-function calculateHabitStats(habitId, checkIns) {
-  const habitCheckIns = checkIns.filter((c) => c.habitId === habitId && c.status === "Completed").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+function calculateHabitStats(habitId, checkins) {
+  const habitCheckIns = checkins.filter((c) => c.habitId === habitId && c.status === "Completed").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   if (habitCheckIns.length === 0) {
     return {
       currentStreak: 0,

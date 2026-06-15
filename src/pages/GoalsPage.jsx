@@ -6,6 +6,7 @@ import ResponsivePageContainer from "../components/shared/ResponsivePageContaine
 import MetricCard from "../components/shared/MetricCard";
 import EmptyState from "../components/shared/EmptyState";
 import PaginationControls from "../components/shared/PaginationControls";
+import { setGoalsPage } from "../features/goals/goalsSlice";
 import GoalCard from "../components/domain/GoalCard";
 import { getGoalProgress } from "../utils/analyticsUtils";
 
@@ -32,7 +33,7 @@ export default function GoalsPage() {
   const achievedCount = goalsWithProgress.filter((goal) => goal.status === "Achieved").length;
   const nearingCount = goalsWithProgress.filter((goal) => goal.status === "Nearing Completion").length;
   const totalPages = Math.ceil(goalsWithProgress.length / ITEMS_PER_PAGE);
-  const currentPage = Math.min(Math.ceil(goalsWithProgress.length / ITEMS_PER_PAGE), Math.max(1, totalPages));
+  const currentPage = useSelector((state) => state.goals.goalsPage);
 
   const paginatedGoals = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
