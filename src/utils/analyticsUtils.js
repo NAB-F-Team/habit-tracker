@@ -59,8 +59,8 @@ export function getCheckinStatus(completedCount = 0, targetPerDay = 1) {
 
 export function getGoalProgress(goal, habit, checkIns) {
   const stats = calculateHabitStats(habit.id, checkIns);
-  const current = goal.type === "Streak" ? stats.currentStreak : stats.totalCompletions;
-  const progress = Math.min((current / goal.target) * 100, 100);
+  const current = goal.targetType === "Streak" ? stats.currentStreak : stats.totalCompletions;
+  const progress = Math.min((current / goal.targetValue) * 100, 100);
 
   let status = "On Track";
   if (progress >= 100) {

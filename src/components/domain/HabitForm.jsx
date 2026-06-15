@@ -93,7 +93,7 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
           id: `goal-${Date.now()}`,
           habitId,
           targetType: formData.goalType,
-          targetValue: formData.goalTarget,
+          targetValue: parseInt(formData.goalTarget),
           createdAt: new Date().toISOString()
         };
         dispatch(addGoal(goalData));

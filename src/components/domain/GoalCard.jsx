@@ -19,7 +19,7 @@ function GoalCard({ goal, habit, current, progress, status }) {
         <div>
           <h3 className="font-semibold text-foreground">{habit.name}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            {goal.type === "Streak" ? "Streak Target" : "Total Completions Target"}
+            {goal.targetType === "Streak" ? "Streak Target" : "Total Completions Target"}
           </p>
         </div>
         <StatusBadge tone={tone}>{status}</StatusBadge>
@@ -30,7 +30,7 @@ function GoalCard({ goal, habit, current, progress, status }) {
           <div className="mb-2 flex items-center justify-between gap-3">
             <span className="text-sm text-muted-foreground">Progress</span>
             <span className="font-medium text-foreground">
-              {current} / {goal.target} {goal.type === "Streak" ? "days" : "completions"}
+              {current} / {goal.targetValue} {goal.targetType === "Streak" ? "days" : "completions"}
             </span>
           </div>
           <ProgressBar
@@ -46,7 +46,7 @@ function GoalCard({ goal, habit, current, progress, status }) {
             <div>
               <p className="font-medium text-foreground">You're almost there!</p>
               <p className="text-sm text-muted-foreground">
-                Just {goal.target - current} more {goal.type === "Streak" ? "days" : "completions"} to go!
+                Just {goal.targetValue - current} more {goal.targetType === "Streak" ? "days" : "completions"} to go!
               </p>
             </div>
           </div>
@@ -65,7 +65,7 @@ function GoalCard({ goal, habit, current, progress, status }) {
         {status === "On Track" && (
           <div className="rounded-lg bg-primary/10 p-3">
             <p className="text-sm text-primary">
-              Keep up the great work! You're {goal.target - current} {goal.type === "Streak" ? "days" : "completions"} away from your goal.
+              Keep up the great work! You're {goal.targetValue - current} {goal.targetType === "Streak" ? "days" : "completions"} away from your goal.
             </p>
           </div>
         )}
