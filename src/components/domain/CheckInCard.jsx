@@ -1,4 +1,4 @@
-import { Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import StatusBadge from "../shared/StatusBadge";
 import ProgressBar from "../shared/ProgressBar";
@@ -14,8 +14,10 @@ function CheckInCard({
   statusLabel,
   onIncrement,
   onDecrement,
+  onMarkDone,
   canIncrement = true,
   canDecrement = true,
+  canMarkDone = true,
   progressValue = 0,
   className
 }) {
@@ -38,7 +40,7 @@ function CheckInCard({
 
               <p className="mt-1 text-sm text-muted-foreground">
                 {completedCount}/{habit.targetPerDay} {habit.targetUnit}
-                {statusLabel === "Not Started" ? <span className="text-muted-foreground/70"> · LATE</span> : null}
+                {statusLabel === "Not Started" ? <span className="text-muted-foreground/70"> - LATE</span> : null}
               </p>
 
               <ProgressBar value={Math.min(progressValue, 100)} className="mt-3 max-w-xs" />
@@ -68,6 +70,16 @@ function CheckInCard({
               aria-label="Increase count"
             >
               <Plus className="size-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => onMarkDone(habit.id)}
+              disabled={!canMarkDone}
+              className="gap-2"
+            >
+              <Check className="size-4" />
+              Done
             </Button>
           </div>
         </div>

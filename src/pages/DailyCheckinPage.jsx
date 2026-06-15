@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { addDays, format, isFuture, subDays } from "date-fns";
 import {
   BookOpen,
@@ -10,7 +10,7 @@ import {
   SlidersHorizontal
 } from "lucide-react";
 import { toast } from "sonner";
-import { addCheckin, updateCheckin } from "../features/checkins/checkinSlice";
+import { addCheckin, updateCheckin, undoLastCheckinAction } from "../features/checkins/checkinSlice";
 import { Button } from "../components/ui/button";
 import SectionCard from "../components/shared/SectionCard";
 import EmptyState from "../components/shared/EmptyState";
@@ -65,6 +65,7 @@ function progressMessageFor(completionPercentage) {
 
 function DailyCheckinPage() {
   const dispatch = useDispatch();
+  const store = useStore();
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const habits = useSelector((state) => state.habits.list);
   const checkins = useSelector((state) => state.checkins.list);
@@ -76,10 +77,41 @@ function DailyCheckinPage() {
 
   const progressMessage = progressMessageFor(completionPercentage);
   const isToday = selectedDate === format(new Date(), "yyyy-MM-dd");
+  const canEditSelectedDate = isToday && !isFuture(new Date(selectedDate));
 
-  const handleIncrement = (habitId) => {
+  const showDateEditError = () => {
     if (isFuture(new Date(selectedDate))) {
       toast.error("Cannot check in for future dates");
+      return;
+    }
+
+    toast.error("Only today's check-ins can be edited");
+  };
+
+  const createUndoId = (habitId, actionType) => `${actionType}-${habitId}-${Date.now()}`;
+
+  const showUndoToast = (message, undoId) => {
+    toast.success(message, {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          const lastCheckinAction = store.getState().checkins.lastAction;
+
+          if (lastCheckinAction?.undoId !== undoId) {
+            toast.error("That check-in action can no longer be undone");
+            return;
+          }
+
+          dispatch(undoLastCheckinAction(undoId));
+          toast.success("Check-in action undone");
+        }
+      }
+    });
+  };
+
+  const handleIncrement = (habitId) => {
+    if (!canEditSelectedDate) {
+      showDateEditError();
       return;
     }
 
@@ -95,30 +127,48 @@ function DailyCheckinPage() {
       }
 
       const completedCount = existingCheckin.completedCount + 1;
+      const undoId = createUndoId(habitId, "increment");
+      const updatedCheckin = {
+        ...existingCheckin,
+        completedCount,
+        status: getCheckinStatus(completedCount, habit.targetPerDay)
+      };
 
       dispatch(
         updateCheckin({
-          ...existingCheckin,
-          completedCount,
-          status: getCheckinStatus(completedCount, habit.targetPerDay)
+          undoId,
+          checkin: updatedCheckin
         })
       );
+      showUndoToast("Check-in updated", undoId);
       return;
     }
 
+    const undoId = createUndoId(habitId, "increment");
+    const newCheckin = {
+      id: `checkin-${Date.now()}`,
+      habitId,
+      date: selectedDate,
+      completedCount: 1,
+      status: getCheckinStatus(1, habit.targetPerDay),
+      createdAt: new Date().toISOString()
+    };
+
     dispatch(
       addCheckin({
-        id: `checkin-${Date.now()}`,
-        habitId,
-        date: selectedDate,
-        completedCount: 1,
-        status: getCheckinStatus(1, habit.targetPerDay),
-        createdAt: new Date().toISOString()
+        undoId,
+        checkin: newCheckin
       })
     );
+    showUndoToast("Check-in added", undoId);
   };
 
   const handleDecrement = (habitId) => {
+    if (!canEditSelectedDate) {
+      showDateEditError();
+      return;
+    }
+
     const existingCheckin = selectedDateCheckins.find((checkin) => checkin.habitId === habitId);
     if (!existingCheckin || existingCheckin.completedCount <= 0) return;
 
@@ -126,14 +176,68 @@ function DailyCheckinPage() {
     if (!habit) return;
 
     const completedCount = Math.max(existingCheckin.completedCount - 1, 0);
+    const undoId = createUndoId(habitId, "decrement");
+    const updatedCheckin = {
+      ...existingCheckin,
+      completedCount,
+      status: getCheckinStatus(completedCount, habit.targetPerDay)
+    };
 
     dispatch(
       updateCheckin({
+        undoId,
+        checkin: updatedCheckin
+      })
+    );
+    showUndoToast("Check-in updated", undoId);
+  };
+
+  const handleMarkDone = (habitId) => {
+    if (!canEditSelectedDate) {
+      showDateEditError();
+      return;
+    }
+
+    const habit = habits.find((item) => item.id === habitId);
+    if (!habit) return;
+
+    const existingCheckin = selectedDateCheckins.find((checkin) => checkin.habitId === habitId);
+    const completedCount = habit.targetPerDay;
+    const undoId = createUndoId(habitId, "done");
+
+    if (existingCheckin) {
+      const updatedCheckin = {
         ...existingCheckin,
         completedCount,
         status: getCheckinStatus(completedCount, habit.targetPerDay)
+      };
+
+      dispatch(
+        updateCheckin({
+          undoId,
+          checkin: updatedCheckin
+        })
+      );
+      showUndoToast("Habit marked done", undoId);
+      return;
+    }
+
+    const newCheckin = {
+      id: `checkin-${Date.now()}`,
+      habitId,
+      date: selectedDate,
+      completedCount,
+      status: getCheckinStatus(completedCount, habit.targetPerDay),
+      createdAt: new Date().toISOString()
+    };
+
+    dispatch(
+      addCheckin({
+        undoId,
+        checkin: newCheckin
       })
     );
+    showUndoToast("Habit marked done", undoId);
   };
 
   const goToPreviousDay = () => {
@@ -232,8 +336,10 @@ function DailyCheckinPage() {
                   progressValue={progress}
                   onIncrement={handleIncrement}
                   onDecrement={handleDecrement}
-                  canIncrement={completedCount < habit.targetPerDay}
-                  canDecrement={!!checkin && completedCount > 0}
+                  onMarkDone={handleMarkDone}
+                  canIncrement={canEditSelectedDate && completedCount < habit.targetPerDay}
+                  canDecrement={canEditSelectedDate && !!checkin && completedCount > 0}
+                  canMarkDone={canEditSelectedDate && completedCount < habit.targetPerDay}
                 />
               );
             })}
