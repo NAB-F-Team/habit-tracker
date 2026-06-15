@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addHabit, updateHabit } from "../../features/habits/habitSlice";
-import { addGoal } from "../../features/goals/goalSlice";
+import { addGoal } from "../../features/goals/goalsSlice";
 import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
 import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
 import { HABIT_PRIORITIES } from "../../constants/priorities";
@@ -92,8 +92,6 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
         const goalData = {
           id: `goal-${Date.now()}`,
           habitId,
-          type: formData.goalType,
-          target: formData.goalTarget,
           targetType: formData.goalType,
           targetValue: formData.goalTarget,
           createdAt: new Date().toISOString()

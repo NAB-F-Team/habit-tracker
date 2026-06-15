@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import habitReducer from "../features/habits/habitSlice";
 import checkinReducer from "../features/checkins/checkinSlice";
-import goalReducer from "../features/goals/goalSlice";
+import goalReducer from "../features/goals/goalsSlice";
 import { loadState, saveState } from "../services/localStorageService";
 
 export const store = configureStore({

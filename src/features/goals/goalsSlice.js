@@ -1,18 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { seedData } from "../../data/seedData";
+import goals from "../../data/goals.json";
 
 const initialState = {
-  list: seedData.goals
+  list: goals
 };
 
-const goalSlice = createSlice({
+const goalsSlice = createSlice({
   name: "goals",
   initialState,
   reducers: {
     addGoal: (state, action) => {
       state.list.push(action.payload);
     },
-
     updateGoal: (state, action) => {
       const index = state.list.findIndex((item) => item.id === action.payload.id);
 
@@ -20,17 +19,12 @@ const goalSlice = createSlice({
         state.list[index] = action.payload;
       }
     },
-
     deleteGoal: (state, action) => {
       state.list = state.list.filter((item) => item.id !== action.payload);
     }
   }
 });
 
-export const {
-  addGoal,
-  updateGoal,
-  deleteGoal
-} = goalSlice.actions;
+export const { addGoal, updateGoal, deleteGoal } = goalsSlice.actions;
 
-export default goalSlice.reducer;
+export default goalsSlice.reducer;

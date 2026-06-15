@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import { Home, ListChecks, Target, BarChart3, Settings, Plus, Menu } from "lucide-react";
 import HabitForm from "../domain/HabitForm";
 import { Button } from "../ui/button";
