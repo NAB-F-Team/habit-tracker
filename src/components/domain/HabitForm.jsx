@@ -92,8 +92,6 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
         const goalData = {
           id: `goal-${Date.now()}`,
           habitId,
-          type: formData.goalType,
-          target: formData.goalTarget,
           targetType: formData.goalType,
           targetValue: formData.goalTarget,
           createdAt: new Date().toISOString()

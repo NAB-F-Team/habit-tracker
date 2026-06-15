@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Activity, AlertTriangle, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
-import { addMonths, format, getDay, getDaysInMonth, startOfMonth, subDays, subMonths } from "date-fns";
+import { addMonths, format, getDay, getDaysInMonth, startOfMonth, subMonths } from "date-fns";
 
 import MetricCard from "../components/shared/MetricCard";
 import ProgressBar from "../components/shared/ProgressBar";
