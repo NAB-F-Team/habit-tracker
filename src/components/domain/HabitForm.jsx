@@ -76,8 +76,8 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
       targetPerDay: formData.targetPerDay,
       targetUnit: formData.targetUnit,
       priority: formData.priority,
-      status: "Active",
-      notes: "",
+      status: editingHabit?.status || "Active",
+      notes: editingHabit?.notes || "",
       daysOfWeek: formData.frequency === "Specific days" ? formData.daysOfWeek : undefined,
       createdAt: editingHabit?.createdAt || new Date().toISOString()
     };
