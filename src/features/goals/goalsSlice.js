@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import goals from "../../data/goals.json";
 
 const initialState = {
-  list: goals
+  list: goals,
+  goalsPage: 1
 };
 
 const goalsSlice = createSlice({
@@ -21,10 +22,13 @@ const goalsSlice = createSlice({
     },
     deleteGoal: (state, action) => {
       state.list = state.list.filter((item) => item.id !== action.payload);
+    },
+    setGoalsPage: (state, action) => {
+      state.goalsPage = action.payload;
     }
   }
 });
 
-export const { addGoal, updateGoal, deleteGoal } = goalsSlice.actions;
+export const { addGoal, updateGoal, deleteGoal, setGoalsPage } = goalsSlice.actions;
 
 export default goalsSlice.reducer;
