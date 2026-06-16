@@ -102,7 +102,7 @@ export default function HabitsPage() {
         const undoId = createUndoId(id, "delete");
         dispatch(deleteHabit({ habitId: id, undoId }));
         showUndoToast("Habit deleted", undoId);
-        
+
         const remainingCount = filteredHabits.length - 1;
         const newTotalPages = Math.ceil(remainingCount / ITEMS_PER_PAGE);
         if (currentPage > newTotalPages && newTotalPages > 0) {
@@ -132,7 +132,8 @@ export default function HabitsPage() {
 
     // Filter logic
     const filteredHabits = useMemo(() => {
-        return habits.filter((habit) => {
+        const sorted = [...habits].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return sorted.filter((habit) => {
             const matchesSearch = habit.name.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCategory = categoryFilter === "all" || habit.category === categoryFilter;
             const matchesPriority = priorityFilter === "all" || habit.priority === priorityFilter;
