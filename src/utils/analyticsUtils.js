@@ -1,5 +1,37 @@
 import { format, differenceInDays } from "date-fns";
 
+const PRIORITY_ORDER = {
+  High: 3,
+  Medium: 2,
+  Low: 1
+};
+
+function getDateKey(value) {
+  return value ? format(new Date(value), "yyyy-MM-dd") : null;
+}
+
+function wasHabitTrackableOnDate(habit, selectedDate, hasCheckin) {
+  if (hasCheckin) return true;
+
+  const createdDate = getDateKey(habit.createdAt);
+  if (createdDate && selectedDate < createdDate) return false;
+
+  const pausedDate = getDateKey(habit.pausedAt);
+  if (pausedDate && selectedDate >= pausedDate) return false;
+
+  const archivedDate = getDateKey(habit.archivedAt);
+  if (archivedDate && selectedDate >= archivedDate) return false;
+
+  return true;
+}
+
+function sortHabitsForDailyCheckin(a, b) {
+  const priorityDifference = (PRIORITY_ORDER[b.priority] || 0) - (PRIORITY_ORDER[a.priority] || 0);
+  if (priorityDifference !== 0) return priorityDifference;
+
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+}
+
 function calculateHabitStats(habitId, checkins) {
   const habitCheckIns = checkins.filter((c) => c.habitId === habitId && c.status === "Completed").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   if (habitCheckIns.length === 0) {
@@ -76,8 +108,6 @@ export function getDailyCompletionSummary(habits, checkins, selectedDate) {
   const selectedDateCheckins = checkins.filter((checkin) => checkin.date === selectedDate);
 
   const habitData = habits
-    .filter((habit) => habit.status === "Active")
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .map((habit) => {
       const checkin = selectedDateCheckins.find((item) => item.habitId === habit.id);
 
@@ -85,7 +115,9 @@ export function getDailyCompletionSummary(habits, checkins, selectedDate) {
         habit,
         checkin
       };
-    });
+    })
+    .filter(({ habit, checkin }) => wasHabitTrackableOnDate(habit, selectedDate, Boolean(checkin)))
+    .sort((a, b) => sortHabitsForDailyCheckin(a.habit, b.habit));
 
   const completedCount = habitData.filter(({ habit, checkin }) => {
     const status = checkin?.status ?? getCheckinStatus(checkin?.completedCount ?? 0, habit.targetPerDay);

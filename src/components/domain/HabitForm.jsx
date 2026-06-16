@@ -5,6 +5,7 @@ import { addGoal } from "../../features/goals/goalsSlice";
 import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
 import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
 import { HABIT_PRIORITIES } from "../../constants/priorities";
+import { HABIT_STATUSES } from "../../constants/statuses";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -22,6 +23,7 @@ const createInitialFormData = (editingHabit) => {
       targetPerDay: editingHabit.targetPerDay,
       targetUnit: editingHabit.targetUnit,
       priority: editingHabit.priority,
+      status: editingHabit.status || "Active",
       daysOfWeek: editingHabit.daysOfWeek || [],
       setGoal: false,
       goalType: "Streak",
@@ -36,6 +38,7 @@ const createInitialFormData = (editingHabit) => {
     targetPerDay: 1,
     targetUnit: "times",
     priority: "Medium",
+    status: "Active",
     daysOfWeek: [],
     setGoal: false,
     goalType: "Streak",
@@ -68,16 +71,36 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     }
 
     const habitId = editingHabit?.id || `habit-${Date.now()}`;
+    const now = new Date().toISOString();
+    const status = editingHabit ? formData.status : "Active";
+    const previousStatus = editingHabit?.status || "Active";
+    let pausedAt = editingHabit?.pausedAt ?? null;
+    let archivedAt = editingHabit?.archivedAt ?? null;
+
+    if (status === "Active") {
+      pausedAt = null;
+      archivedAt = null;
+    } else if (status === "Paused") {
+      pausedAt = previousStatus === "Paused" ? pausedAt || now : now;
+      archivedAt = null;
+    } else if (status === "Archived") {
+      pausedAt = null;
+      archivedAt = previousStatus === "Archived" ? archivedAt || now : now;
+    }
+
     const habitData = {
       id: habitId,
       name: formData.name.trim(),
       category: formData.category,
       frequency: formData.frequency,
+      target: formData.targetPerDay,
       targetPerDay: formData.targetPerDay,
       targetUnit: formData.targetUnit,
       priority: formData.priority,
-      status: "Active",
-      notes: "",
+      status,
+      pausedAt,
+      archivedAt,
+      notes: editingHabit?.notes || "",
       daysOfWeek: formData.frequency === "Specific days" ? formData.daysOfWeek : undefined,
       createdAt: editingHabit?.createdAt || new Date().toISOString()
     };
@@ -169,6 +192,24 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
               </Select>
             </div>
           </div>
+
+          {editingHabit ? (
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                <SelectTrigger id="status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {HABIT_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="frequency">Frequency</Label>

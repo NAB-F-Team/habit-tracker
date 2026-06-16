@@ -22,6 +22,25 @@ const createDefaultState = () => ({
 
 const hasList = (section) => section && Array.isArray(section.list);
 
+const normalizeHabit = (habit) => {
+  const normalized = {
+    ...habit,
+    pausedAt: habit.pausedAt ?? null,
+    archivedAt: habit.archivedAt ?? null
+  };
+
+  if (normalized.status === "Paused" && !normalized.pausedAt) {
+    normalized.pausedAt = new Date().toISOString();
+  }
+
+  if (normalized.status === "Archived" && !normalized.archivedAt) {
+    normalized.pausedAt = null;
+    normalized.archivedAt = new Date().toISOString();
+  }
+
+  return normalized;
+};
+
 const normalizeState = (state) => {
   if (!state || typeof state !== "object") {
     return undefined;
@@ -34,6 +53,7 @@ const normalizeState = (state) => {
       ? {
           ...defaults.habits,
           ...state.habits,
+          list: state.habits.list.map(normalizeHabit),
           filters: {
             ...defaults.habits.filters,
             ...(state.habits.filters ?? {})

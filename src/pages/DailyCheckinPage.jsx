@@ -43,6 +43,11 @@ const STATUS_TONES = {
   "Not Started": "danger"
 };
 
+const HABIT_STATUS_TONES = {
+  Paused: "warning",
+  Archived: "muted"
+};
+
 function progressMessageFor(completionPercentage) {
   if (completionPercentage === 100) {
     return { title: "Perfect Day!", subtitle: "You completed all your habits today." };
@@ -117,6 +122,10 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
+    if (habit.status !== "Active") {
+      toast.error("Only active habits can be checked in");
+      return;
+    }
 
     const existingCheckin = selectedDateCheckins.find((checkin) => checkin.habitId === habitId);
 
@@ -174,6 +183,10 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
+    if (habit.status !== "Active") {
+      toast.error("Only active habits can be checked in");
+      return;
+    }
 
     const completedCount = Math.max(existingCheckin.completedCount - 1, 0);
     const undoId = createUndoId(habitId, "decrement");
@@ -200,6 +213,10 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
+    if (habit.status !== "Active") {
+      toast.error("Only active habits can be checked in");
+      return;
+    }
 
     const existingCheckin = selectedDateCheckins.find((checkin) => checkin.habitId === habitId);
     const completedCount = habit.targetPerDay;
@@ -312,17 +329,19 @@ function DailyCheckinPage() {
         {habitData.length === 0 ? (
           <EmptyState
             icon={Droplet}
-            title="No active habits"
-            description="Add some habits to start tracking your progress"
+            title="No habits for this date"
+            description="No habits match this date"
           />
         ) : (
           <div className="space-y-3">
             {habitData.map(({ habit, checkin }) => {
               const completedCount = checkin?.completedCount || 0;
               const status = checkin?.status ?? getCheckinStatus(completedCount, habit.targetPerDay);
+              const isMissedToday = isToday && habit.status === "Active" && completedCount === 0;
               const progress = (completedCount / habit.targetPerDay) * 100;
               const CategoryIcon = CATEGORY_ICONS[habit.category] || Dumbbell;
               const categoryStyles = CATEGORY_STYLES[habit.category] || CATEGORY_STYLES.Other;
+              const canEditHabit = canEditSelectedDate && habit.status === "Active";
               return (
                 <CheckInCard
                   key={habit.id}
@@ -333,13 +352,16 @@ function DailyCheckinPage() {
                   categoryIconClassName={categoryStyles.icon}
                   statusTone={STATUS_TONES[status] || "muted"}
                   statusLabel={status}
+                  habitStatusLabel={habit.status !== "Active" ? habit.status : undefined}
+                  habitStatusTone={HABIT_STATUS_TONES[habit.status] || "muted"}
                   progressValue={progress}
+                  isMissedToday={isMissedToday}
                   onIncrement={handleIncrement}
                   onDecrement={handleDecrement}
                   onMarkDone={handleMarkDone}
-                  canIncrement={canEditSelectedDate && completedCount < habit.targetPerDay}
-                  canDecrement={canEditSelectedDate && !!checkin && completedCount > 0}
-                  canMarkDone={canEditSelectedDate && completedCount < habit.targetPerDay}
+                  canIncrement={canEditHabit && completedCount < habit.targetPerDay}
+                  canDecrement={canEditHabit && !!checkin && completedCount > 0}
+                  canMarkDone={canEditHabit && completedCount < habit.targetPerDay}
                 />
               );
             })}
