@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addHabit, updateHabit } from "../../features/habits/habitSlice";
-import { addGoal } from "../../features/goals/goalsSlice";
+import { addGoal, updateGoal, deleteGoal } from "../../features/goals/goalsSlice";
 import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
 import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
 import { HABIT_PRIORITIES } from "../../constants/priorities";
@@ -13,39 +13,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Switch } from "../ui/switch";
 
-const createInitialFormData = (editingHabit) => {
-  if (editingHabit) {
+function HabitForm({ isOpen, onClose, editingHabit }) {
+  const dispatch = useDispatch();
+  const goals = useSelector((state) => state.goals.list);
+  const associatedGoal = editingHabit ? goals.find((g) => g.habitId === editingHabit.id) : null;
+
+  const [formData, setFormData] = useState(() => {
+    if (editingHabit) {
+      return {
+        name: editingHabit.name,
+        category: editingHabit.category,
+        frequency: editingHabit.frequency,
+        targetPerDay: editingHabit.targetPerDay,
+        targetUnit: editingHabit.targetUnit,
+        priority: editingHabit.priority,
+        daysOfWeek: editingHabit.daysOfWeek || [],
+        setGoal: !!associatedGoal,
+        goalType: associatedGoal ? (associatedGoal.targetType === "Streak" ? "Streak" : "Total Completions") : "Streak",
+        goalTarget: associatedGoal ? associatedGoal.targetValue : 30
+      };
+    }
+
     return {
-      name: editingHabit.name,
-      category: editingHabit.category,
-      frequency: editingHabit.frequency,
-      targetPerDay: editingHabit.targetPerDay,
-      targetUnit: editingHabit.targetUnit,
-      priority: editingHabit.priority,
-      daysOfWeek: editingHabit.daysOfWeek || [],
+      name: "",
+      category: "Health",
+      frequency: "Daily",
+      targetPerDay: 1,
+      targetUnit: "times",
+      priority: "Medium",
+      daysOfWeek: [],
       setGoal: false,
       goalType: "Streak",
       goalTarget: 30
     };
-  }
-
-  return {
-    name: "",
-    category: "Health",
-    frequency: "Daily",
-    targetPerDay: 1,
-    targetUnit: "times",
-    priority: "Medium",
-    daysOfWeek: [],
-    setGoal: false,
-    goalType: "Streak",
-    goalTarget: 30
-  };
-};
-
-function HabitForm({ isOpen, onClose, editingHabit }) {
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState(() => createInitialFormData(editingHabit));
+  });
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -76,8 +77,8 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
       targetPerDay: formData.targetPerDay,
       targetUnit: formData.targetUnit,
       priority: formData.priority,
-      status: "Active",
-      notes: "",
+      status: editingHabit?.status || "Active",
+      notes: editingHabit?.notes || "",
       daysOfWeek: formData.frequency === "Specific days" ? formData.daysOfWeek : undefined,
       createdAt: editingHabit?.createdAt || new Date().toISOString()
     };
@@ -85,6 +86,31 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     if (editingHabit) {
       dispatch(updateHabit(habitData));
       toast.success("Habit updated successfully");
+
+      if (formData.setGoal) {
+        if (associatedGoal) {
+          dispatch(updateGoal({
+            ...associatedGoal,
+            targetType: formData.goalType,
+            targetValue: parseInt(formData.goalTarget)
+          }));
+          toast.success("Goal updated successfully");
+        } else {
+          dispatch(addGoal({
+            id: `goal-${Date.now()}`,
+            habitId: habitId,
+            targetType: formData.goalType,
+            targetValue: parseInt(formData.goalTarget),
+            createdAt: new Date().toISOString()
+          }));
+          toast.success("Goal created successfully");
+        }
+      } else {
+        if (associatedGoal) {
+          dispatch(deleteGoal(associatedGoal.id));
+          toast.success("Goal deleted successfully");
+        }
+      }
     } else {
       dispatch(addHabit(habitData));
       toast.success("Habit created successfully");
