@@ -18,6 +18,39 @@ import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 5;
 
+function applyHabitStatus(habit, status) {
+    const now = new Date().toISOString();
+
+    if (status === "Active") {
+        return {
+            ...habit,
+            status,
+            pausedAt: null,
+            archivedAt: null
+        };
+    }
+
+    if (status === "Paused") {
+        return {
+            ...habit,
+            status,
+            pausedAt: habit.status === "Paused" ? habit.pausedAt || now : now,
+            archivedAt: null
+        };
+    }
+
+    if (status === "Archived") {
+        return {
+            ...habit,
+            status,
+            pausedAt: null,
+            archivedAt: habit.status === "Archived" ? habit.archivedAt || now : now
+        };
+    }
+
+    return habit;
+}
+
 export default function HabitsPage() {
     const dispatch = useDispatch();
     const store = useStore();
@@ -114,7 +147,7 @@ export default function HabitsPage() {
         const newStatus = habit.status === "Active" ? "Paused" : "Active";
         const undoId = createUndoId(habit.id, "toggle-status");
         dispatch(updateHabit({
-            habit: { ...habit, status: newStatus },
+            habit: applyHabitStatus(habit, newStatus),
             undoId
         }));
         showUndoToast(`Habit status updated to ${newStatus}`, undoId);
@@ -124,7 +157,7 @@ export default function HabitsPage() {
         const newStatus = habit.status === "Archived" ? "Active" : "Archived";
         const undoId = createUndoId(habit.id, "toggle-archive");
         dispatch(updateHabit({
-            habit: { ...habit, status: newStatus },
+            habit: applyHabitStatus(habit, newStatus),
             undoId
         }));
         showUndoToast(habit.status === "Archived" ? "Habit restored" : "Habit archived", undoId);
