@@ -65,6 +65,27 @@ export default function HabitsPage() {
     const [frequencyFilter, setFrequencyFilter] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Filter logic
+    const filteredHabits = useMemo(() => {
+        const sorted = [...habits].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return sorted.filter((habit) => {
+            const matchesSearch = habit.name.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory = categoryFilter === "all" || habit.category === categoryFilter;
+            const matchesPriority = priorityFilter === "all" || habit.priority === priorityFilter;
+            const matchesStatus = statusFilter === "all" || habit.status === statusFilter;
+            const matchedFrequency = frequencyFilter === "all" || habit.frequency === frequencyFilter;
+            return matchesSearch && matchesCategory && matchesPriority && matchesStatus && matchedFrequency;
+        });
+    }, [habits, searchQuery, categoryFilter, priorityFilter, statusFilter, frequencyFilter]);
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredHabits.length / ITEMS_PER_PAGE);
+
+    const paginatedHabits = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredHabits.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredHabits, currentPage]);
+
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1);
@@ -163,25 +184,7 @@ export default function HabitsPage() {
         showUndoToast(habit.status === "Archived" ? "Habit restored" : "Habit archived", undoId);
     };
 
-    // Filter logic
-    const filteredHabits = useMemo(() => {
-        const sorted = [...habits].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        return sorted.filter((habit) => {
-            const matchesSearch = habit.name.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCategory = categoryFilter === "all" || habit.category === categoryFilter;
-            const matchesPriority = priorityFilter === "all" || habit.priority === priorityFilter;
-            const matchesStatus = statusFilter === "all" || habit.status === statusFilter;
-            const matchedFrequency = frequencyFilter === "all" || habit.frequency === frequencyFilter;
-            return matchesSearch && matchesCategory && matchesPriority && matchesStatus && matchedFrequency;
-        });
-    }, [habits, searchQuery, categoryFilter, priorityFilter, statusFilter, frequencyFilter]);
-    // Pagination logic
-    const totalPages = Math.ceil(filteredHabits.length / ITEMS_PER_PAGE);
 
-    const paginatedHabits = useMemo(() => {
-        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        return filteredHabits.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    }, [filteredHabits, currentPage]);
 
     const isFiltersActive = searchQuery !== "" || categoryFilter !== "all" || priorityFilter !== "all" || statusFilter !== "all" || frequencyFilter !== "all";
 
