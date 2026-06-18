@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addHabit, updateHabit } from "../../features/habits/habitSlice";
-import { addGoal } from "../../features/goals/goalsSlice";
+import { addGoal, updateGoal, deleteGoal } from "../../features/goals/goalsSlice";
 import { TARGET_UNITS, DAYS_OF_WEEK } from "../../constants/units";
 import { HABIT_CATEGORIES, GOAL_TYPES } from "../../constants/categories";
 import { HABIT_PRIORITIES } from "../../constants/priorities";
+import { HABIT_STATUSES } from "../../constants/statuses";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -13,39 +14,42 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Switch } from "../ui/switch";
 
-const createInitialFormData = (editingHabit) => {
-  if (editingHabit) {
+function HabitForm({ isOpen, onClose, editingHabit }) {
+  const dispatch = useDispatch();
+  const goals = useSelector((state) => state.goals.list);
+  const associatedGoal = editingHabit ? goals.find((g) => g.habitId === editingHabit.id) : null;
+
+  const [formData, setFormData] = useState(() => {
+    if (editingHabit) {
+      return {
+        name: editingHabit.name,
+        category: editingHabit.category,
+        frequency: editingHabit.frequency,
+        targetPerDay: editingHabit.targetPerDay,
+        targetUnit: editingHabit.targetUnit,
+        priority: editingHabit.priority,
+        status: editingHabit.status || "Active",
+        daysOfWeek: editingHabit.daysOfWeek || [],
+        setGoal: !!associatedGoal,
+        goalType: associatedGoal ? (associatedGoal.targetType === "Streak" ? "Streak" : "Total Completions") : "Streak",
+        goalTarget: associatedGoal ? associatedGoal.targetValue : 30
+      };
+    }
+
     return {
-      name: editingHabit.name,
-      category: editingHabit.category,
-      frequency: editingHabit.frequency,
-      targetPerDay: editingHabit.targetPerDay,
-      targetUnit: editingHabit.targetUnit,
-      priority: editingHabit.priority,
-      daysOfWeek: editingHabit.daysOfWeek || [],
+      name: "",
+      category: "Health",
+      frequency: "Daily",
+      targetPerDay: 1,
+      targetUnit: "times",
+      priority: "Medium",
+      status: "Active",
+      daysOfWeek: [],
       setGoal: false,
       goalType: "Streak",
       goalTarget: 30
     };
-  }
-
-  return {
-    name: "",
-    category: "Health",
-    frequency: "Daily",
-    targetPerDay: 1,
-    targetUnit: "times",
-    priority: "Medium",
-    daysOfWeek: [],
-    setGoal: false,
-    goalType: "Streak",
-    goalTarget: 30
-  };
-};
-
-function HabitForm({ isOpen, onClose, editingHabit }) {
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState(() => createInitialFormData(editingHabit));
+  });
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -68,16 +72,36 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     }
 
     const habitId = editingHabit?.id || `habit-${Date.now()}`;
+    const now = new Date().toISOString();
+    const status = editingHabit ? formData.status : "Active";
+    const previousStatus = editingHabit?.status || "Active";
+    let pausedAt = editingHabit?.pausedAt ?? null;
+    let archivedAt = editingHabit?.archivedAt ?? null;
+
+    if (status === "Active") {
+      pausedAt = null;
+      archivedAt = null;
+    } else if (status === "Paused") {
+      pausedAt = previousStatus === "Paused" ? pausedAt || now : now;
+      archivedAt = null;
+    } else if (status === "Archived") {
+      pausedAt = null;
+      archivedAt = previousStatus === "Archived" ? archivedAt || now : now;
+    }
+
     const habitData = {
       id: habitId,
       name: formData.name.trim(),
       category: formData.category,
       frequency: formData.frequency,
+      target: formData.targetPerDay,
       targetPerDay: formData.targetPerDay,
       targetUnit: formData.targetUnit,
       priority: formData.priority,
-      status: "Active",
-      notes: "",
+      status,
+      pausedAt,
+      archivedAt,
+      notes: editingHabit?.notes || "",
       daysOfWeek: formData.frequency === "Specific days" ? formData.daysOfWeek : undefined,
       createdAt: editingHabit?.createdAt || new Date().toISOString()
     };
@@ -85,6 +109,31 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     if (editingHabit) {
       dispatch(updateHabit(habitData));
       toast.success("Habit updated successfully");
+
+      if (formData.setGoal) {
+        if (associatedGoal) {
+          dispatch(updateGoal({
+            ...associatedGoal,
+            targetType: formData.goalType,
+            targetValue: parseInt(formData.goalTarget)
+          }));
+          toast.success("Goal updated successfully");
+        } else {
+          dispatch(addGoal({
+            id: `goal-${Date.now()}`,
+            habitId: habitId,
+            targetType: formData.goalType,
+            targetValue: parseInt(formData.goalTarget),
+            createdAt: new Date().toISOString()
+          }));
+          toast.success("Goal created successfully");
+        }
+      } else {
+        if (associatedGoal) {
+          dispatch(deleteGoal(associatedGoal.id));
+          toast.success("Goal deleted successfully");
+        }
+      }
     } else {
       dispatch(addHabit(habitData));
       toast.success("Habit created successfully");
@@ -93,7 +142,7 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
           id: `goal-${Date.now()}`,
           habitId,
           targetType: formData.goalType,
-          targetValue: formData.goalTarget,
+          targetValue: parseInt(formData.goalTarget),
           createdAt: new Date().toISOString()
         };
         dispatch(addGoal(goalData));
@@ -169,6 +218,24 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
               </Select>
             </div>
           </div>
+
+          {editingHabit ? (
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                <SelectTrigger id="status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {HABIT_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="frequency">Frequency</Label>
