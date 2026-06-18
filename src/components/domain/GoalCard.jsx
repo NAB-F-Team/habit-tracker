@@ -1,8 +1,26 @@
+import { useRef, useEffect } from "react";
+import { toast } from "sonner";
 import { CheckCircle2, TrendingUp } from "lucide-react";
 import StatusBadge from "../shared/StatusBadge";
 import ProgressBar from "../shared/ProgressBar";
 
 function GoalCard({ goal, habit, current, progress, status }) {
+  const prevStatus = useRef(status);
+
+  useEffect(() => {
+    if (prevStatus.current === status) return;
+    if (status === "Nearing Completion") {
+      toast("You're doing great!", {
+        description: `Keep it up! You're almost at your goal for ${habit.name}. Just ${goal.target - current} more to go!`,
+      });
+    } else if (status === "Achieved") {
+      toast.success("Goal Achieved!", {
+        description: `Congratulations! You've reached your goal for ${habit.name}!`,
+      });
+    }
+    prevStatus.current = status;
+  }, [status, habit.name, goal.target, current]);
+
   const tone = status === "Achieved" ? "success" : status === "Nearing Completion" ? "warning" : "info";
 
   return (
@@ -62,13 +80,6 @@ function GoalCard({ goal, habit, current, progress, status }) {
           </div>
         )}
 
-        {status === "On Track" && (
-          <div className="rounded-lg bg-primary/10 p-3">
-            <p className="text-sm text-primary">
-              Keep up the great work! You're {goal.target - current} {goal.type === "Streak" ? "days" : "completions"} away from your goal.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
