@@ -124,7 +124,6 @@ habits: {
       category: "Health",
       frequency: "Daily",
       daysOfWeek: [1, 3, 5],
-      target: 8,
       targetPerDay: 8,
       targetUnit: "cups",
       priority: "High",
@@ -225,8 +224,6 @@ npm install
 # 3. Start the dev server
 npm run dev
 ```
-
-The app runs at `http://localhost:5173` by default.
 
 ---
 
