@@ -64,9 +64,9 @@
   },
   {
     "id": "gl10",
-    "habitId": "hb1",
+    "habitId": "hb7",
     "targetType": "Total Completions",
-    "targetValue": 240,
+    "targetValue": 100,
     "createdAt": "2026-06-01T00:00:00Z"
   }
 ]
