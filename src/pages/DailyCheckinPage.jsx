@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { addDays, format, isFuture, subDays } from "date-fns";
 import {
@@ -10,7 +10,10 @@ import {
   SlidersHorizontal
 } from "lucide-react";
 import { toast } from "sonner";
-import { addCheckin, updateCheckin, undoLastCheckinAction } from "../features/checkins/checkinSlice";
+import confetti from "canvas-confetti";
+import { undoLastCheckinAction } from "../features/checkins/checkinSlice";
+import { addCheckinWithGoalCheck, updateCheckinWithGoalCheck } from "../features/checkins/checkinsThunks";
+import { clearGoalNotification } from "../features/goals/goalsSlice";
 import { Button } from "../components/ui/button";
 import SectionCard from "../components/shared/SectionCard";
 import EmptyState from "../components/shared/EmptyState";
@@ -74,6 +77,30 @@ function DailyCheckinPage() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const habits = useSelector((state) => state.habits.list);
   const checkins = useSelector((state) => state.checkins.list);
+  const lastGoalNotification = useSelector((state) => state.goals.lastGoalNotification);
+
+  useEffect(() => {
+    if (!lastGoalNotification) return;
+
+    const { goal, habit, status, current } = lastGoalNotification;
+
+    if (status === "Nearing Completion") {
+      toast.info("You're doing great!", {
+        description: `Keep it up! You're almost at your goal for ${habit.name}. Just ${goal.targetValue - current} more to go!`,
+      });
+    } else if (status === "Achieved") {
+      toast.success("Goal Achieved!", {
+        description: `Congratulations! You've reached your goal for ${habit.name}!`,
+      });
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }
+
+    dispatch(clearGoalNotification());
+  }, [lastGoalNotification, dispatch]);
 
   const { habitData, selectedDateCheckins, completionPercentage } = useMemo(
     () => getDailyCompletionSummary(habits, checkins, selectedDate),
@@ -143,12 +170,7 @@ function DailyCheckinPage() {
         status: getCheckinStatus(completedCount, habit.targetPerDay)
       };
 
-      dispatch(
-        updateCheckin({
-          undoId,
-          checkin: updatedCheckin
-        })
-      );
+      dispatch(updateCheckinWithGoalCheck(updatedCheckin, undoId));
       showUndoToast("Check-in updated", undoId);
       return;
     }
@@ -163,12 +185,7 @@ function DailyCheckinPage() {
       createdAt: new Date().toISOString()
     };
 
-    dispatch(
-      addCheckin({
-        undoId,
-        checkin: newCheckin
-      })
-    );
+    dispatch(addCheckinWithGoalCheck(newCheckin, undoId));
     showUndoToast("Check-in added", undoId);
   };
 
@@ -196,12 +213,7 @@ function DailyCheckinPage() {
       status: getCheckinStatus(completedCount, habit.targetPerDay)
     };
 
-    dispatch(
-      updateCheckin({
-        undoId,
-        checkin: updatedCheckin
-      })
-    );
+    dispatch(updateCheckinWithGoalCheck(updatedCheckin, undoId));
     showUndoToast("Check-in updated", undoId);
   };
 
@@ -229,12 +241,7 @@ function DailyCheckinPage() {
         status: getCheckinStatus(completedCount, habit.targetPerDay)
       };
 
-      dispatch(
-        updateCheckin({
-          undoId,
-          checkin: updatedCheckin
-        })
-      );
+      dispatch(updateCheckinWithGoalCheck(updatedCheckin, undoId));
       showUndoToast("Habit marked done", undoId);
       return;
     }
@@ -248,12 +255,7 @@ function DailyCheckinPage() {
       createdAt: new Date().toISOString()
     };
 
-    dispatch(
-      addCheckin({
-        undoId,
-        checkin: newCheckin
-      })
-    );
+    dispatch(addCheckinWithGoalCheck(newCheckin, undoId));
     showUndoToast("Habit marked done", undoId);
   };
 
