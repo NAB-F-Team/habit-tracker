@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, ListChecks, Target, BarChart3, Plus, Menu, RotateCcw } from "lucide-react";
+import {
+  Home,
+  ListChecks,
+  Target,
+  BarChart3,
+  Plus,
+  Menu,
+  RotateCcw,
+} from "lucide-react";
 import HabitForm from "../domain/HabitForm";
 import { Button } from "../ui/button";
 import {
@@ -29,7 +37,7 @@ function Sidebar() {
 
   const handleResetData = () => {
     const confirmReset = window.confirm(
-      "Are you sure you want to reset all data back to the initial state? This will delete all your local changes."
+      "Are you sure you want to reset all data back to the initial state? This will delete all your local changes.",
     );
     if (confirmReset) {
       localStorage.clear();
@@ -56,7 +64,7 @@ function Sidebar() {
               <p className="font-semibold leading-none text-foreground">
                 Habit Tracker Pro
               </p>
-              <p className="text-xs text-muted-foreground">Mobile dashboard</p>
+              {/* <p className="text-xs text-muted-foreground">Mobile dashboard</p> */}
             </div>
           </div>
 
@@ -72,7 +80,10 @@ function Sidebar() {
       </div>
 
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-        <SheetContent side="left" className="w-[86vw] max-w-sm p-0 flex flex-col h-full">
+        <SheetContent
+          side="left"
+          className="w-[86vw] max-w-sm p-0 flex flex-col h-full"
+        >
           <SheetHeader className="border-b border-border px-5 py-4 flex-shrink-0">
             <SheetTitle>Habit Tracker Pro</SheetTitle>
             <SheetDescription>
