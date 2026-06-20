@@ -116,6 +116,7 @@ export function getStatisticsPageData(habits, checkins) {
 
   return {
     activeHabits,
+    allHabits: habits,
     checkinsByHabit,
     completedTodayPercent,
     categories,
