@@ -26,7 +26,15 @@ export default function GoalsPage() {
           if (!habit) return null;
           return getGoalProgress(goal, habit, checkins);
         })
-        .filter(Boolean),
+        .filter(Boolean)
+        .sort((a, b) => {
+          const aAchieved = a.status === "Achieved" ? 1 : 0;
+          const bAchieved = b.status === "Achieved" ? 1 : 0;
+          if (aAchieved !== bAchieved) {
+            return aAchieved - bAchieved;
+          }
+          return new Date(b.goal.createdAt || 0) - new Date(a.goal.createdAt || 0);
+        }),
     [goals, habits, checkins],
   );
 

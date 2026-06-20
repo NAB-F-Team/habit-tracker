@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { addDays, format, isFuture, subDays } from "date-fns";
+import { addDays, format, subDays } from "date-fns";
 import {
   BookOpen,
   ChevronLeft,
@@ -107,16 +107,14 @@ function DailyCheckinPage() {
   );
 
   const progressMessage = progressMessageFor(completionPercentage);
-  const isToday = selectedDate === format(new Date(), "yyyy-MM-dd");
-  const canEditSelectedDate = isToday && !isFuture(new Date(selectedDate));
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const isToday = selectedDate === todayStr;
+  const canEditSelectedDate = selectedDate <= todayStr;
 
   const showDateEditError = () => {
-    if (isFuture(new Date(selectedDate))) {
+    if (selectedDate > todayStr) {
       toast.error("Cannot check in for future dates");
-      return;
     }
-
-    toast.error("Only today's check-ins can be edited");
   };
 
   const createUndoId = (habitId, actionType) => `${actionType}-${habitId}-${Date.now()}`;
