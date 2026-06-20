@@ -3,7 +3,8 @@ import goals from "../../data/goals.json";
 
 const initialState = {
   list: goals,
-  goalsPage: 1
+  goalsPage: 1,
+  lastGoalNotification: null
 };
 
 const goalsSlice = createSlice({
@@ -25,10 +26,16 @@ const goalsSlice = createSlice({
     },
     setGoalsPage: (state, action) => {
       state.goalsPage = action.payload;
+    },
+    setGoalNotification: (state, action) => {
+      state.lastGoalNotification = action.payload;
+    },
+    clearGoalNotification: (state) => {
+      state.lastGoalNotification = null;
     }
   }
 });
 
-export const { addGoal, updateGoal, deleteGoal, setGoalsPage } = goalsSlice.actions;
+export const { addGoal, updateGoal, deleteGoal, setGoalsPage, setGoalNotification, clearGoalNotification } = goalsSlice.actions;
 
 export default goalsSlice.reducer;

@@ -23,15 +23,15 @@
   {
     "id": "gl4",
     "habitId": "hb4",
-    "targetType": "Streak",
-    "targetValue": 7,
+    "targetType": "Total Completions",
+    "targetValue": 2,
     "createdAt": "2026-05-10T00:00:00Z"
   },
   {
     "id": "gl5",
     "habitId": "hb5",
     "targetType": "Total Completions",
-    "targetValue": 50,
+    "targetValue": 5,
     "createdAt": "2026-04-20T00:00:00Z"
   },
   {

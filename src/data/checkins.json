@@ -78,5 +78,21 @@
     "completedCount": 0,
     "status": "Not Started",
     "createdAt": "2026-06-05T08:00:00Z"
+  },
+  {
+    "id": "ci11",
+    "habitId": "hb5",
+    "date": "2026-06-18",
+    "completedCount": 30,
+    "status": "Completed",
+    "createdAt": "2026-06-18T21:00:00Z"
+  },
+  {
+    "id": "ci12",
+    "habitId": "hb5",
+    "date": "2026-06-19",
+    "completedCount": 30,
+    "status": "Completed",
+    "createdAt": "2026-06-19T21:00:00Z"
   }
 ]
