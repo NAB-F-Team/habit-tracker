@@ -8,7 +8,6 @@ import ProgressBar from "../components/shared/ProgressBar";
 import ResponsiveHeader from "../components/shared/ResponsiveHeader";
 import ResponsivePageContainer from "../components/shared/ResponsivePageContainer";
 import SectionCard from "../components/shared/SectionCard";
-import StatusBadge from "../components/shared/StatusBadge";
 import {
   getStatisticsPageData,
   getStreakStats,
@@ -18,6 +17,7 @@ import {
 } from "../utils/statisticsUtils";
 import CalendarHeatmap from "../components/shared/CalendarHeatMap";
 import { Button } from "../components/ui/button";
+import { exportData } from "../services/exportService";
 
 // const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -210,15 +210,7 @@ export default function StatisticsPage() {
 
   const handleExport = () => {
     const payload = { habits, checkins, goals };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `habit-data-${format(new Date(), "yyyy-MM-dd")}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportData(payload);
   };
 
   const stats = useMemo(

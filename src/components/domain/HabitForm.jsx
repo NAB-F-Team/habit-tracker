@@ -101,7 +101,6 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
       status,
       pausedAt,
       archivedAt,
-      notes: editingHabit?.notes || "",
       daysOfWeek: formData.frequency === "Specific days" ? formData.daysOfWeek : undefined,
       createdAt: editingHabit?.createdAt || new Date().toISOString()
     };

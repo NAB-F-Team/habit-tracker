@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { Plus, Search, RotateCcw } from "lucide-react";
 import { deleteHabit, updateHabit, undoLastHabitAction } from "../features/habits/habitSlice";
+import { useDebounce } from "../hooks/useDebounce";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
@@ -59,6 +60,7 @@ export default function HabitsPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingHabit, setEditingHabit] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [priorityFilter, setPriorityFilter] = useState("all");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -69,14 +71,14 @@ export default function HabitsPage() {
     const filteredHabits = useMemo(() => {
         const sorted = [...habits].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         return sorted.filter((habit) => {
-            const matchesSearch = habit.name.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = habit.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
             const matchesCategory = categoryFilter === "all" || habit.category === categoryFilter;
             const matchesPriority = priorityFilter === "all" || habit.priority === priorityFilter;
             const matchesStatus = statusFilter === "all" || habit.status === statusFilter;
             const matchedFrequency = frequencyFilter === "all" || habit.frequency === frequencyFilter;
             return matchesSearch && matchesCategory && matchesPriority && matchesStatus && matchedFrequency;
         });
-    }, [habits, searchQuery, categoryFilter, priorityFilter, statusFilter, frequencyFilter]);
+    }, [habits, debouncedSearchQuery, categoryFilter, priorityFilter, statusFilter, frequencyFilter]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredHabits.length / ITEMS_PER_PAGE);

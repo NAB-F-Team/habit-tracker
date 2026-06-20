@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Check, Minus, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import StatusBadge from "../shared/StatusBadge";
 import ProgressBar from "../shared/ProgressBar";
@@ -29,14 +31,65 @@ function CheckInCard({
   onIncrement,
   onDecrement,
   onMarkDone,
+  onChangeCount,
   canIncrement = true,
   canDecrement = true,
   canMarkDone = true,
   isMissedToday = false,
   progressValue = 0,
+  canEdit = true,
   className
 }) {
   const completedCount = checkIn?.completedCount || 0;
+  const [prevCompletedCount, setPrevCompletedCount] = useState(completedCount);
+  const [inputValue, setInputValue] = useState(completedCount);
+
+  if (completedCount !== prevCompletedCount) {
+    setPrevCompletedCount(completedCount);
+    setInputValue(completedCount);
+  }
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    if (inputValue === "" || inputValue === null || inputValue === undefined) {
+      toast.error("Please enter a valid count");
+      setInputValue(completedCount);
+      return;
+    }
+
+    let parsed = parseInt(inputValue, 10);
+    if (isNaN(parsed)) {
+      toast.error("Please enter a valid count");
+      setInputValue(completedCount);
+      return;
+    }
+
+    if (parsed < 0) {
+      toast.error("Completed count cannot be negative");
+      setInputValue(completedCount);
+      return;
+    }
+
+    if (parsed > habit.targetPerDay) {
+      toast.error(`Completed count cannot exceed the daily target of ${habit.targetPerDay}`);
+      setInputValue(completedCount);
+      return;
+    }
+
+    setInputValue(parsed);
+    if (onChangeCount) {
+      onChangeCount(habit.id, parsed);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.target.blur();
+    }
+  };
 
   return (
     <div
@@ -88,9 +141,17 @@ function CheckInCard({
                 <Minus className="size-4" />
               </Button>
 
-              <div className="min-w-[72px] rounded-lg border border-border bg-muted/40 px-4 py-2 text-center">
-                <span className="font-semibold text-foreground">{completedCount}</span>
-              </div>
+              <input
+                type="number"
+                min="0"
+                max={habit.targetPerDay}
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                onKeyDown={handleKeyDown}
+                disabled={!canEdit}
+                className="w-[72px] rounded-lg border border-border bg-background px-1 py-1.5 text-center font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted/40 disabled:text-foreground"
+              />
 
               <Button
                 variant="outline"

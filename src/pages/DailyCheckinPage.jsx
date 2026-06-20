@@ -6,8 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Droplet,
-  Dumbbell,
-  SlidersHorizontal
+  Dumbbell
 } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -259,6 +258,47 @@ function DailyCheckinPage() {
     showUndoToast("Habit marked done", undoId);
   };
 
+  const handleCountChange = (habitId, count) => {
+    if (!canEditSelectedDate) {
+      showDateEditError();
+      return;
+    }
+
+    const habit = habits.find((item) => item.id === habitId);
+    if (!habit) return;
+    if (habit.status !== "Active") {
+      toast.error("Only active habits can be checked in");
+      return;
+    }
+
+    const existingCheckin = selectedDateCheckins.find((checkin) => checkin.habitId === habitId);
+    const undoId = createUndoId(habitId, "count");
+
+    if (existingCheckin) {
+      const updatedCheckin = {
+        ...existingCheckin,
+        completedCount: count,
+        status: getCheckinStatus(count, habit.targetPerDay)
+      };
+
+      dispatch(updateCheckinWithGoalCheck(updatedCheckin, undoId));
+      showUndoToast("Check-in updated", undoId);
+      return;
+    }
+
+    const newCheckin = {
+      id: `checkin-${Date.now()}`,
+      habitId,
+      date: selectedDate,
+      completedCount: count,
+      status: getCheckinStatus(count, habit.targetPerDay),
+      createdAt: new Date().toISOString()
+    };
+
+    dispatch(addCheckinWithGoalCheck(newCheckin, undoId));
+    showUndoToast("Check-in added", undoId);
+  };
+
   const goToPreviousDay = () => {
     setSelectedDate(format(subDays(new Date(selectedDate), 1), "yyyy-MM-dd"));
   };
@@ -322,10 +362,7 @@ function DailyCheckinPage() {
 
       <div>
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Daily Check-ins</h3>
-          <Button variant="ghost" size="icon" aria-label="Filter habits">
-            <SlidersHorizontal className="size-4" />
-          </Button>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Daily Check-ins</h2>
         </div>
 
         {habitData.length === 0 ? (
@@ -361,9 +398,11 @@ function DailyCheckinPage() {
                   onIncrement={handleIncrement}
                   onDecrement={handleDecrement}
                   onMarkDone={handleMarkDone}
+                  onChangeCount={handleCountChange}
                   canIncrement={canEditHabit && completedCount < habit.targetPerDay}
                   canDecrement={canEditHabit && !!checkin && completedCount > 0}
                   canMarkDone={canEditHabit && completedCount < habit.targetPerDay}
+                  canEdit={canEditHabit}
                 />
               );
             })}
