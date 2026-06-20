@@ -321,16 +321,20 @@ function DailyCheckinPage() {
             <div className="text-sm font-semibold text-foreground sm:text-base">
               {format(new Date(selectedDate), "EEEE, MMM d, yyyy")}
             </div>
-            {!isToday ? (
+            {isToday ? (
+              <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                Today
+              </span>
+            ) : (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={goToToday}
                 className="mt-1 h-7 px-2 text-xs tracking-wide text-muted-foreground"
               >
-                Today
+                Back to Today
               </Button>
-            ) : null}
+            )}
           </div>
 
           <Button variant="outline" size="icon" onClick={goToNextDay} aria-label="Next day">
