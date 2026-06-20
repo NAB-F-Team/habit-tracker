@@ -1,7 +1,98 @@
 [
   {
-    "habitId":"h1",
-    "date":"2026-06-07",
-    "completed":5
+    "id": "ci1",
+    "habitId": "hb1",
+    "date": "2026-06-08",
+    "completedCount": 8,
+    "status": "Completed",
+    "createdAt": "2026-06-08T09:00:00Z"
+  },
+  {
+    "id": "ci2",
+    "habitId": "hb2",
+    "date": "2026-06-08",
+    "completedCount": 60,
+    "status": "Completed",
+    "createdAt": "2026-06-08T10:30:00Z"
+  },
+  {
+    "id": "ci3",
+    "habitId": "hb4",
+    "date": "2026-06-08",
+    "completedCount": 15,
+    "status": "Completed",
+    "createdAt": "2026-06-08T07:20:00Z"
+  },
+  {
+    "id": "ci4",
+    "habitId": "hb5",
+    "date": "2026-06-07",
+    "completedCount": 30,
+    "status": "Completed",
+    "createdAt": "2026-06-07T21:00:00Z"
+  },
+  {
+    "id": "ci5",
+    "habitId": "hb6",
+    "date": "2026-06-07",
+    "completedCount": 2,
+    "status": "Completed",
+    "createdAt": "2026-06-07T15:00:00Z"
+  },
+  {
+    "id": "ci6",
+    "habitId": "hb8",
+    "date": "2026-06-06",
+    "completedCount": 150,
+    "status": "Completed",
+    "createdAt": "2026-06-06T19:00:00Z"
+  },
+  {
+    "id": "ci7",
+    "habitId": "hb9",
+    "date": "2026-06-06",
+    "completedCount": 5,
+    "status": "Completed",
+    "createdAt": "2026-06-06T06:45:00Z"
+  },
+  {
+    "id": "ci8",
+    "habitId": "hb10",
+    "date": "2026-06-06",
+    "completedCount": 4,
+    "status": "Completed",
+    "createdAt": "2026-06-06T14:00:00Z"
+  },
+  {
+    "id": "ci9",
+    "habitId": "hb1",
+    "date": "2026-06-05",
+    "completedCount": 7,
+    "status": "In Progress",
+    "createdAt": "2026-06-05T09:00:00Z"
+  },
+  {
+    "id": "ci10",
+    "habitId": "hb3",
+    "date": "2026-06-05",
+    "completedCount": 0,
+    "status": "Not Started",
+    "createdAt": "2026-06-05T08:00:00Z"
+  },
+  {
+    "id": "ci11",
+    "habitId": "hb5",
+    "date": "2026-06-18",
+    "completedCount": 30,
+    "status": "Completed",
+    "createdAt": "2026-06-18T21:00:00Z"
+  },
+  {
+    "id": "ci12",
+    "habitId": "hb5",
+    "date": "2026-06-19",
+    "completedCount": 30,
+    "status": "Completed",
+    "createdAt": "2026-06-19T21:00:00Z"
   }
 ]

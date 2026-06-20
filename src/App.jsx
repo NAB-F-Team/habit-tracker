@@ -1,35 +1,21 @@
 import { Routes, Route } from "react-router-dom";
+import AppShell from "./components/layout/AppShell";
+import HabitsPage from "./pages/HabitsPage";
+import StatisticsPage from "./pages/StatisticsPage";
+import GoalsPage from "./pages/GoalsPage";
+import DailyCheckinPage from "./pages/DailyCheckinPage";
 
 function App() {
-
   return (
-
-    <Routes>
-
-      <Route
-        path="/"
-        element={<Home />}
-      />
-
-      <Route
-        path="/habits"
-        element={<HabitsPage />}
-      />
-
-      <Route
-        path="/dashboard"
-        element={<DashboardPage />}
-      />
-
-      <Route
-        path="/settings"
-        element={<SettingsPage />}
-      />
-
-    </Routes>
-
+    <AppShell>
+      <Routes>
+        <Route path="/" element={<DailyCheckinPage />} />
+        <Route path="/habits" element={<HabitsPage />} />
+        <Route path="/goals" element={<GoalsPage />} />
+        <Route path="/stats" element={<StatisticsPage />} />
+      </Routes>
+    </AppShell>
   );
-
 }
 
 export default App;

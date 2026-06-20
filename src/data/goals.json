@@ -1,0 +1,68 @@
+[
+  {
+    "id": "gl1",
+    "habitId": "hb1",
+    "targetType": "Streak",
+    "targetValue": 30,
+    "createdAt": "2026-06-01T00:00:00Z"
+  },
+  {
+    "id": "gl2",
+    "habitId": "hb2",
+    "targetType": "Streak",
+    "targetValue": 10,
+    "createdAt": "2026-06-15T00:00:00Z"
+  },
+  {
+    "id": "gl3",
+    "habitId": "hb3",
+    "targetType": "Total Completions",
+    "targetValue": 50,
+    "createdAt": "2026-06-01T00:00:00Z"
+  },
+  {
+    "id": "gl4",
+    "habitId": "hb4",
+    "targetType": "Total Completions",
+    "targetValue": 2,
+    "createdAt": "2026-05-10T00:00:00Z"
+  },
+  {
+    "id": "gl5",
+    "habitId": "hb5",
+    "targetType": "Total Completions",
+    "targetValue": 5,
+    "createdAt": "2026-04-20T00:00:00Z"
+  },
+  {
+    "createdAt": "2026-06-10T00:00:00Z"
+  },
+  {
+    "id": "gl7",
+    "habitId": "hb10",
+    "targetType": "Total Completions",
+    "targetValue": 100,
+    "createdAt": "2026-06-05T00:00:00Z"
+  },
+  {
+    "id": "gl8",
+    "habitId": "hb9",
+    "targetType": "Streak",
+    "targetValue": 10,
+    "createdAt": "2026-06-18T00:00:00Z"
+  },
+  {
+    "id": "gl9",
+    "habitId": "hb6",
+    "targetType": "Streak",
+    "targetValue": 30,
+    "createdAt": "2026-06-05T00:00:00Z"
+  },
+  {
+    "id": "gl10",
+    "habitId": "hb7",
+    "targetType": "Total Completions",
+    "targetValue": 100,
+    "createdAt": "2026-06-01T00:00:00Z"
+  }
+]

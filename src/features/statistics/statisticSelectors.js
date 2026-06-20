@@ -16,7 +16,7 @@ export const getOverallStats = createSelector(
 
         const totalCompleted =
             checkins.reduce(
-                (sum, item) => sum + item.completed,
+                (sum, item) => sum + (item.completedCount ?? 0),
                 0
             );
 
