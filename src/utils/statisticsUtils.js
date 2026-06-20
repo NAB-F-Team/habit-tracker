@@ -110,11 +110,13 @@ export function getStatisticsPageData(habits, checkins) {
   }).length;
 
   const completedTodayPercent = activeHabits.length > 0 ? Math.round((todayCompleted / activeHabits.length) * 100) : 0;
-  const categories = getCategoryDistribution(activeHabits);
+  // Category distribution should include all habits regardless of status
+  const categories = getCategoryDistribution(habits);
   const atRiskCount = activeHabits.filter((habit) => getStreakStats(habit, checkinsByHabit[habit.id] || []).currentStreak < 3).length;
 
   return {
     activeHabits,
+    allHabits: habits,
     checkinsByHabit,
     completedTodayPercent,
     categories,
