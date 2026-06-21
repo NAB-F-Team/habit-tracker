@@ -115,7 +115,6 @@ function CheckInCard({
 
               <p className="mt-1 text-sm text-muted-foreground">
                 {completedCount}/{habit.targetPerDay} {habit.targetUnit}
-                {statusLabel === "Not Started" ? <span className="text-muted-foreground/70"> - LATE</span> : null}
               </p>
 
               <ProgressBar

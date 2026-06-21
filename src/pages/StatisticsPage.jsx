@@ -22,12 +22,12 @@ import { exportData } from "../services/exportService";
 // const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const CATEGORY_STYLES = {
-  Health: { dot: "bg-secondary", label: "text-secondary-foreground" },
-  Study: { dot: "bg-primary", label: "text-primary" },
-  Work: { dot: "bg-accent", label: "text-accent-foreground" },
-  Mindfulness: { dot: "bg-primary/70", label: "text-primary" },
-  Fitness: { dot: "bg-secondary/70", label: "text-secondary-foreground" },
-  Other: { dot: "bg-muted-foreground", label: "text-muted-foreground" },
+  Health: { dot: "bg-[#ABD2FA]", label: "text-[#3D518C] dark:text-[#ABD2FA]", text: "text-[#ABD2FA]" },
+  Study: { dot: "bg-[#7692FF]", label: "text-[#7692FF]", text: "text-[#7692FF]" },
+  Work: { dot: "bg-[#091540] dark:bg-[#ABD2FA]", label: "text-[#091540] dark:text-[#ABD2FA]", text: "text-[#091540] dark:text-[#ABD2FA]" },
+  Mindfulness: { dot: "bg-[#3D518C]", label: "text-[#3D518C] dark:text-[#ABD2FA]", text: "text-[#3D518C]" },
+  Fitness: { dot: "bg-[#1B2CC1]", label: "text-[#1B2CC1] dark:text-[#7692FF]", text: "text-[#1B2CC1]" },
+  Other: { dot: "bg-[#94A3B8]", label: "text-[#94A3B8]", text: "text-[#94A3B8]" },
 };
 
 function LineChart({ categories, activeHabits, checkins }) {
@@ -88,15 +88,6 @@ function LineChart({ categories, activeHabits, checkins }) {
 
   const xStep = plotWidth / (days.length - 1);
 
-  const colorClasses = [
-    "text-primary",
-    "text-secondary",
-    "text-accent",
-    "text-primary/70",
-    "text-secondary/70",
-    "text-muted-foreground",
-  ];
-
   return (
     <div className="overflow-x-auto">
       <svg
@@ -147,7 +138,7 @@ function LineChart({ categories, activeHabits, checkins }) {
           ))}
 
           {/* Lines */}
-          {series.map((s, si) => {
+          {series.map((s) => {
             const points = s.values
               .map((v, i) => {
                 const x = i * xStep;
@@ -156,7 +147,8 @@ function LineChart({ categories, activeHabits, checkins }) {
               })
               .join(" ");
 
-            const colorClass = colorClasses[si % colorClasses.length];
+            const style = CATEGORY_STYLES[s.name] || CATEGORY_STYLES.Other;
+            const colorClass = style.text;
 
             return (
               <g key={s.name}>

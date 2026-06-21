@@ -16,11 +16,10 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from "../ui/sheet";
 
 const navigation = [
-  { name: "Daily Check-ins", path: "/", icon: Home },
+  { name: "Daily Check-in", path: "/", icon: Home },
   { name: "Habits", path: "/habits", icon: ListChecks },
   { name: "Goals", path: "/goals", icon: Target },
   { name: "Statistics", path: "/stats", icon: BarChart3 },
@@ -81,14 +80,11 @@ function Sidebar() {
 
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
         <SheetContent
-          side="left"
+          side="right"
           className="w-[86vw] max-w-sm p-0 flex flex-col h-full"
         >
           <SheetHeader className="border-b border-border px-5 py-4 flex-shrink-0">
             <SheetTitle>Habit Tracker Pro</SheetTitle>
-            <SheetDescription>
-              Navigate between sections and create habits.
-            </SheetDescription>
           </SheetHeader>
 
           <div className="flex flex-col gap-4 p-4 flex-1 overflow-y-auto">
