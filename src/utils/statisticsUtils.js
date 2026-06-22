@@ -21,6 +21,20 @@ export function groupByHabit(checkins) {
   }, {});
 }
 
+export function getActiveDaysDifference(habit, dateA, dateB) {
+  const dA = new Date(`${dateA}T00:00:00`);
+  const dB = new Date(`${dateB}T00:00:00`);
+  const diffCalendar = Math.round((dA - dB) / 86400000);
+
+  const pausedDate = habit.pausedAt ? format(new Date(habit.pausedAt), "yyyy-MM-dd") : null;
+  if (pausedDate) {
+    if (pausedDate > dateB && pausedDate <= dateA) {
+      return Math.max(0, diffCalendar - 1);
+    }
+  }
+  return diffCalendar;
+}
+
 // Calculate streak statistics for a habit
 export function getStreakStats(habit, checkins) {
   const completedDates = [...new Set(checkins.filter((checkin) => isCompleted(habit, checkin)).map((checkin) => checkin.date))].sort();
@@ -33,25 +47,35 @@ export function getStreakStats(habit, checkins) {
   let currentRun = 1;
 
   for (let index = 1; index < completedDates.length; index += 1) {
-    const previous = new Date(`${completedDates[index - 1]}T00:00:00`);
-    const current = new Date(`${completedDates[index]}T00:00:00`);
-    const dayDifference = Math.round((current - previous) / 86400000);
+    const previous = completedDates[index - 1];
+    const current = completedDates[index];
+    const dayDifference = getActiveDaysDifference(habit, current, previous);
 
     currentRun = dayDifference === 1 ? currentRun + 1 : 1;
     longestStreak = Math.max(longestStreak, currentRun);
   }
 
-  let currentStreak = 1;
-  for (let index = completedDates.length - 1; index > 0; index -= 1) {
-    const previous = new Date(`${completedDates[index - 1]}T00:00:00`);
-    const current = new Date(`${completedDates[index]}T00:00:00`);
-    const dayDifference = Math.round((current - previous) / 86400000);
+  let currentStreak = 0;
+  if (habit.status !== "Archived") {
+    const today = format(new Date(), "yyyy-MM-dd");
+    const mostRecentDate = completedDates[completedDates.length - 1];
+    const activeDaysToToday = getActiveDaysDifference(habit, today, mostRecentDate);
+    const isStreakActive = activeDaysToToday <= 1;
 
-    if (dayDifference !== 1) {
-      break;
+    if (isStreakActive) {
+      currentStreak = 1;
+      for (let index = completedDates.length - 1; index > 0; index -= 1) {
+        const previous = completedDates[index - 1];
+        const current = completedDates[index];
+        const dayDifference = getActiveDaysDifference(habit, current, previous);
+
+        if (dayDifference !== 1) {
+          break;
+        }
+
+        currentStreak += 1;
+      }
     }
-
-    currentStreak += 1;
   }
 
   return {

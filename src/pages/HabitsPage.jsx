@@ -15,6 +15,7 @@ import ResponsivePageContainer from "../components/shared/ResponsivePageContaine
 import ResponsiveHeader from "../components/shared/ResponsiveHeader";
 import { HABIT_CATEGORIES } from "../constants/categories";
 import { HABIT_PRIORITIES } from "../constants/priorities";
+import { HABIT_STATUSES } from "../constants/statuses";
 import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 5;
@@ -168,6 +169,16 @@ export default function HabitsPage() {
 
     const handleToggleStatus = (habit) => {
         const newStatus = habit.status === "Active" ? "Paused" : "Active";
+        if (newStatus === "Paused") {
+            const todayStr = new Date().toISOString().split("T")[0];
+            const pausedTodayCount = habits.filter(
+                (h) => h.status === "Paused" && h.pausedAt && h.pausedAt.startsWith(todayStr)
+            ).length;
+            if (pausedTodayCount >= 2) {
+                toast.error("You can only pause up to 2 habits per day");
+                return;
+            }
+        }
         const undoId = createUndoId(habit.id, "toggle-status");
         dispatch(updateHabit({
             habit: applyHabitStatus(habit, newStatus),
@@ -249,9 +260,11 @@ export default function HabitsPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Statuses</SelectItem>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Paused">Paused</SelectItem>
-                                <SelectItem value="Archived">Archived</SelectItem>
+                                {HABIT_STATUSES.map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {status}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
 

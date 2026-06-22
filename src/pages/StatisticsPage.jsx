@@ -19,8 +19,6 @@ import CalendarHeatmap from "../components/shared/CalendarHeatMap";
 import { Button } from "../components/ui/button";
 import { exportData } from "../services/exportService";
 
-// const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 const CATEGORY_STYLES = {
   Health: { dot: "bg-[#ABD2FA]", label: "text-[#3D518C] dark:text-[#ABD2FA]", text: "text-[#ABD2FA]" },
   Study: { dot: "bg-[#7692FF]", label: "text-[#7692FF]", text: "text-[#7692FF]" },

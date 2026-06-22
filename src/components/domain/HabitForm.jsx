@@ -16,6 +16,7 @@ import { Switch } from "../ui/switch";
 
 function HabitForm({ isOpen, onClose, editingHabit }) {
   const dispatch = useDispatch();
+  const habits = useSelector((state) => state.habits.list);
   const goals = useSelector((state) => state.goals.list);
   const associatedGoal = editingHabit ? goals.find((g) => g.habitId === editingHabit.id) : null;
 
@@ -75,6 +76,18 @@ function HabitForm({ isOpen, onClose, editingHabit }) {
     const now = new Date().toISOString();
     const status = editingHabit ? formData.status : "Active";
     const previousStatus = editingHabit?.status || "Active";
+
+    if (status === "Paused" && previousStatus !== "Paused") {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const pausedTodayCount = habits.filter(
+        (h) => h.status === "Paused" && h.pausedAt && h.pausedAt.startsWith(todayStr)
+      ).length;
+      if (pausedTodayCount >= 2) {
+        toast.error("You can only pause up to 2 habits per day");
+        return;
+      }
+    }
+
     let pausedAt = editingHabit?.pausedAt ?? null;
     let archivedAt = editingHabit?.archivedAt ?? null;
 

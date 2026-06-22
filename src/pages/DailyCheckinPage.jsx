@@ -19,7 +19,7 @@ import EmptyState from "../components/shared/EmptyState";
 import ProgressBar from "../components/shared/ProgressBar";
 import CheckInCard from "../components/domain/CheckInCard";
 import ResponsivePageContainer from "../components/shared/ResponsivePageContainer";
-import { getCheckinStatus, getDailyCompletionSummary } from "../utils/analyticsUtils";
+import { getCheckinStatus, getDailyCompletionSummary, getHabitStatusOnDate } from "../utils/analyticsUtils";
 
 const CATEGORY_ICONS = {
   Fitness: Dumbbell,
@@ -146,7 +146,7 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
-    if (habit.status !== "Active") {
+    if (getHabitStatusOnDate(habit, selectedDate) !== "Active") {
       toast.error("Only active habits can be checked in");
       return;
     }
@@ -197,7 +197,7 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
-    if (habit.status !== "Active") {
+    if (getHabitStatusOnDate(habit, selectedDate) !== "Active") {
       toast.error("Only active habits can be checked in");
       return;
     }
@@ -222,7 +222,7 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
-    if (habit.status !== "Active") {
+    if (getHabitStatusOnDate(habit, selectedDate) !== "Active") {
       toast.error("Only active habits can be checked in");
       return;
     }
@@ -264,7 +264,7 @@ function DailyCheckinPage() {
 
     const habit = habits.find((item) => item.id === habitId);
     if (!habit) return;
-    if (habit.status !== "Active") {
+    if (getHabitStatusOnDate(habit, selectedDate) !== "Active") {
       toast.error("Only active habits can be checked in");
       return;
     }
@@ -378,11 +378,12 @@ function DailyCheckinPage() {
             {habitData.map(({ habit, checkin }) => {
               const completedCount = checkin?.completedCount || 0;
               const status = checkin?.status ?? getCheckinStatus(completedCount, habit.targetPerDay);
-              const isMissedToday = isToday && habit.status === "Active" && completedCount === 0;
+              const statusOnDate = getHabitStatusOnDate(habit, selectedDate);
+              const isMissedToday = isToday && statusOnDate === "Active" && completedCount === 0;
               const progress = (completedCount / habit.targetPerDay) * 100;
               const CategoryIcon = CATEGORY_ICONS[habit.category] || Dumbbell;
               const categoryStyles = CATEGORY_STYLES[habit.category] || CATEGORY_STYLES.Other;
-              const canEditHabit = canEditSelectedDate && habit.status === "Active";
+              const canEditHabit = canEditSelectedDate && statusOnDate === "Active";
               return (
                 <CheckInCard
                   key={habit.id}
@@ -393,8 +394,8 @@ function DailyCheckinPage() {
                   categoryIconClassName={categoryStyles.icon}
                   statusTone={STATUS_TONES[status] || "muted"}
                   statusLabel={status}
-                  habitStatusLabel={habit.status !== "Active" ? habit.status : undefined}
-                  habitStatusTone={HABIT_STATUS_TONES[habit.status] || "muted"}
+                  habitStatusLabel={statusOnDate !== "Active" ? statusOnDate : undefined}
+                  habitStatusTone={HABIT_STATUS_TONES[statusOnDate] || "muted"}
                   progressValue={progress}
                   isMissedToday={isMissedToday}
                   onIncrement={handleIncrement}

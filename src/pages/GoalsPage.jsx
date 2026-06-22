@@ -85,10 +85,6 @@ export default function GoalsPage() {
 
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {/* <p className="text-sm text-muted-foreground">
-                Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to{" "}
-                {Math.min(currentPage * ITEMS_PER_PAGE, goalsWithProgress.length)} of {goalsWithProgress.length} goals
-              </p> */}
               <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={(page) => dispatch(setGoalsPage(page))} />
             </div>
           </div>

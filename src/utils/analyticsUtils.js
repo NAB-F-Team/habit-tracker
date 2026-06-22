@@ -10,17 +10,47 @@ function getDateKey(value) {
   return value ? format(new Date(value), "yyyy-MM-dd") : null;
 }
 
+export function getHabitStatusOnDate(habit, selectedDate) {
+  if (habit.status === "Archived") {
+    const archivedDate = getDateKey(habit.archivedAt);
+    if (archivedDate && selectedDate >= archivedDate) {
+      return "Archived";
+    }
+  }
+  if (habit.status === "Paused") {
+    const pausedDate = getDateKey(habit.pausedAt);
+    if (pausedDate && selectedDate === pausedDate) {
+      return "Paused";
+    }
+  }
+  return "Active";
+}
+
+export function getActiveDaysDifference(habit, dateA, dateB) {
+  const dRefA = new Date(dateA);
+  const dRefB = new Date(dateB);
+  const diffCalendar = differenceInDays(dRefA, dRefB);
+  
+  const pausedDate = getDateKey(habit.pausedAt);
+  if (pausedDate) {
+    if (pausedDate > dateB && pausedDate <= dateA) {
+      return Math.max(0, diffCalendar - 1);
+    }
+  }
+  return diffCalendar;
+}
+
 function wasHabitTrackableOnDate(habit, selectedDate, hasCheckin) {
   if (hasCheckin) return true;
 
   const createdDate = getDateKey(habit.createdAt);
   if (createdDate && selectedDate < createdDate) return false;
 
-  const pausedDate = getDateKey(habit.pausedAt);
-  if (pausedDate && selectedDate >= pausedDate) return false;
-
   const archivedDate = getDateKey(habit.archivedAt);
   if (archivedDate && selectedDate >= archivedDate) return false;
+
+  const pausedDate = getDateKey(habit.pausedAt);
+  if (pausedDate && selectedDate === pausedDate) return false;
 
   return true;
 }
@@ -32,7 +62,8 @@ function sortHabitsForDailyCheckin(a, b) {
   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
-function calculateHabitStats(habitId, checkins) {
+function calculateHabitStats(habit, checkins) {
+  const habitId = habit.id;
   const habitCheckIns = checkins.filter((c) => c.habitId === habitId && c.status === "Completed").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   if (habitCheckIns.length === 0) {
     return {
@@ -42,31 +73,37 @@ function calculateHabitStats(habitId, checkins) {
     };
   }
   const totalCompletions = habitCheckIns.length;
+  
   let currentStreak = 0;
-  const today = format(/* @__PURE__ */ new Date(), "yyyy-MM-dd");
-  const yesterday = format(new Date(Date.now() - 24 * 60 * 60 * 1e3), "yyyy-MM-dd");
-  const hasRecentCheckIn = habitCheckIns.some((c) => c.date === today || c.date === yesterday);
-  if (hasRecentCheckIn) {
+  if (habit.status !== "Archived") {
+    const today = format(/* @__PURE__ */ new Date(), "yyyy-MM-dd");
     const sortedDates2 = habitCheckIns.map((c) => c.date).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-    let currentDate = sortedDates2[0];
-    currentStreak = 1;
-    for (let i = 1; i < sortedDates2.length; i++) {
-      const prevDate = sortedDates2[i];
-      const daysDiff = differenceInDays(new Date(currentDate), new Date(prevDate));
-      if (daysDiff === 1) {
-        currentStreak++;
-        currentDate = prevDate;
-      } else {
-        break;
+    const mostRecentDate = sortedDates2[0];
+    const activeDaysToToday = getActiveDaysDifference(habit, today, mostRecentDate);
+    const isStreakActive = activeDaysToToday <= 1;
+    
+    if (isStreakActive) {
+      let currentDate = sortedDates2[0];
+      currentStreak = 1;
+      for (let i = 1; i < sortedDates2.length; i++) {
+        const prevDate = sortedDates2[i];
+        const activeDaysDiff = getActiveDaysDifference(habit, currentDate, prevDate);
+        if (activeDaysDiff === 1) {
+          currentStreak++;
+          currentDate = prevDate;
+        } else {
+          break;
+        }
       }
     }
   }
+
   let longestStreak = 0;
   let tempStreak = 1;
   const sortedDates = habitCheckIns.map((c) => c.date).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   for (let i = 1; i < sortedDates.length; i++) {
-    const daysDiff = differenceInDays(new Date(sortedDates[i - 1]), new Date(sortedDates[i]));
-    if (daysDiff === 1) {
+    const activeDaysDiff = getActiveDaysDifference(habit, sortedDates[i - 1], sortedDates[i]);
+    if (activeDaysDiff === 1) {
       tempStreak++;
     } else {
       longestStreak = Math.max(longestStreak, tempStreak);
@@ -74,6 +111,7 @@ function calculateHabitStats(habitId, checkins) {
     }
   }
   longestStreak = Math.max(longestStreak, tempStreak);
+
   return {
     currentStreak,
     longestStreak,
@@ -90,7 +128,7 @@ export function getCheckinStatus(completedCount = 0, targetPerDay = 1) {
 }
 
 export function getGoalProgress(goal, habit, checkIns) {
-  const stats = calculateHabitStats(habit.id, checkIns);
+  const stats = calculateHabitStats(habit, checkIns);
   const current = goal.targetType === "Streak" ? stats.currentStreak : stats.totalCompletions;
   const progress = Math.min((current / goal.targetValue) * 100, 100);
 
