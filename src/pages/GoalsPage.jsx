@@ -23,7 +23,7 @@ export default function GoalsPage() {
       goals
         .map((goal) => {
           const habit = habits.find((item) => item.id === goal.habitId);
-          if (!habit) return null;
+          if (!habit || habit.status === "Archived") return null;
           return getGoalProgress(goal, habit, checkins);
         })
         .filter(Boolean)
