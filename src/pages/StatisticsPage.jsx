@@ -15,7 +15,7 @@ import {
   getDateKey,
   isCompleted,
 } from "../utils/statisticsUtils";
-import CalendarHeatmap from "../components/shared/CalendarHeatMap";
+import CalendarHeatmap from "../components/domain/CalendarHeatMap";
 import { Button } from "../components/ui/button";
 import { exportData } from "../services/exportService";
 

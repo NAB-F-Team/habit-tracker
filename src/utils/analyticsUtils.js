@@ -52,6 +52,12 @@ function wasHabitTrackableOnDate(habit, selectedDate, hasCheckin) {
   const pausedDate = getDateKey(habit.pausedAt);
   if (pausedDate && selectedDate === pausedDate) return false;
 
+  if (habit.frequency === "Specific days" && Array.isArray(habit.daysOfWeek)) {
+    const dateObj = new Date(`${selectedDate}T00:00:00`);
+    const dayOfWeek = dateObj.getDay();
+    if (!habit.daysOfWeek.includes(dayOfWeek)) return false;
+  }
+
   return true;
 }
 
